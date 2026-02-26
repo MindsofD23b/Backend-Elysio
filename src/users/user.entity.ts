@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeor
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column({unique: true})
@@ -39,7 +39,7 @@ export class User {
     jobTitle: string;
 
     @Column()
-    AboutMe: string;
+    aboutMe: string;
 
     @Column({default: false})
     acceptedTerms: boolean;
