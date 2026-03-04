@@ -50,6 +50,9 @@ export class User {
     @Column({nullable: true})
     lastLogin: Date;
 
+    @Column({default: 'free'})
+    subscriptionStatus: string;
+
     @CreateDateColumn()
     createdAt: Date;
 }
