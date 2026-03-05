@@ -4,7 +4,7 @@ import * as nodemailer from 'nodemailer'
 @Injectable()
 export class EmailService {
 
-    // Nodemailer.com
+    // Made with Nodemailer.com and ChatGPT
 
     private transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,

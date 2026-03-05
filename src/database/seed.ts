@@ -6,6 +6,8 @@ import { User } from '../users/user.entity'
 import { faker } from '@faker-js/faker'
 import * as bcrypt from 'bcrypt'
 
+// Made with ChatGPT
+
 async function bootstrap() {
     const app = await NestFactory.createApplicationContext(AppModule)
 

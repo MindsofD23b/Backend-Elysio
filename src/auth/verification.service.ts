@@ -4,6 +4,8 @@ import { Repository } from 'typeorm'
 import { VerificationToken } from './verification-token.entity'
 import { randomUUID } from 'crypto'
 
+// Made with ChatGPT and TypeORM documentation: https://typeorm.io/repository-api#repositorycreateentity-like---entity
+
 @Injectable()
 export class VerificationService {
     constructor(
