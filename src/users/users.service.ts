@@ -15,13 +15,14 @@ export class UsersService {
     ) { }
 
     async create(dto: CreateUserDto): Promise<UserResponseDto> {
-        const hashedPassword = await bcrypt.hash(dto.password, 12)
 
+        const hashedPassword = await bcrypt.hash(dto.password, 12)
 
         const user = this.userRepository.create({
             ...dto,
             password: hashedPassword
         })
+
         const saved = await this.userRepository.save(user)
 
         return this.mapToResponseDto(saved)

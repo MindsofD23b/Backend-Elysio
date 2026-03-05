@@ -1,29 +1,34 @@
 import { Module } from '@nestjs/common'
-import { JwtModule } from '@nestjs/jwt'
-import { PassportModule } from '@nestjs/passport'
-import { ConfigService, ConfigModule } from '@nestjs/config'
-import { UsersModule } from '../users/users.module'
-import { AuthService } from './auth.service'
+import { TypeOrmModule } from '@nestjs/typeorm'
+
 import { AuthController } from './auth.controller'
-import { JwtStrategy } from './jwt.strategy'
+import { AuthService } from './auth.service'
+import { EmailService } from './email.service'
+import { VerificationService } from './verification.service'
+import { AuthGateway } from './auth.gateway'
+
+import { UsersModule } from '../users/users.module'
+import { JwtModule } from '@nestjs/jwt'
+
+import { VerificationToken } from './verification-token.entity'
 
 @Module({
   imports: [
     UsersModule,
-    PassportModule,
-    ConfigModule,
-
-    JwtModule.registerAsync({
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        secret: config.getOrThrow<string>('JWT_SECRET'),
-        signOptions: {
-          expiresIn: config.getOrThrow<string>('JWT_EXPIRES_IN') as any,
-        },
-      }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: {
+        expiresIn: process.env.JWT_EXPIRES_IN as any
+      }
     }),
+    TypeOrmModule.forFeature([VerificationToken])
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [
+    AuthService,
+    EmailService,
+    VerificationService,
+    AuthGateway
+  ]
 })
 export class AuthModule { }
