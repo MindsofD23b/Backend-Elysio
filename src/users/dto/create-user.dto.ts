@@ -17,6 +17,9 @@ export class CreateUserDto {
     password: string
 
     @IsString()
+    phonePrefix: string
+
+    @IsString()
     @Matches(/^\+?[0-9]{8,15}$/)
     phoneNumber: string
 

@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { UsersService } from '../users/users.service'
 import * as bcrypt from 'bcrypt'
@@ -25,7 +25,27 @@ export class AuthService {
     }
 
     async login(dto: LoginDto) {
-        const user = await this.usersService.findByEmail(dto.email)
+
+        let user
+
+        if (dto.email) {
+            user = await this.usersService.findByEmail(dto.email)
+        } 
+        else if (dto.phonePrefix && dto.phoneNumber) {
+            user = await this.usersService.findByPhone(
+                dto.phonePrefix,
+                dto.phoneNumber
+            )
+        } 
+        else {
+            throw new BadRequestException(
+                'Provide either email or phonePrefix + phoneNumber'
+            )
+        }
+
+        if (!user) {
+            throw new UnauthorizedException('Invalid credentials')
+        }
 
         const isMatch = await bcrypt.compare(dto.password, user.password)
 
@@ -35,11 +55,12 @@ export class AuthService {
 
         return this.generateToken(user.id)
     }
-
     private generateToken(userId: string) {
         const payload = { sub: userId }
+
         return {
-            access_token: this.jwtService.sign(payload),
+            token: this.jwtService.sign(payload),
         }
     }
+
 }

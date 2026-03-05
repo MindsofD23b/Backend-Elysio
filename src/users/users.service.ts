@@ -11,18 +11,18 @@ import * as bcrypt from 'bcrypt'
 export class UsersService {
     constructor(
         @InjectRepository(User)
-        private usersRepository: Repository<User>,
+        private userRepository: Repository<User>,
     ) { }
 
     async create(dto: CreateUserDto): Promise<UserResponseDto> {
         const hashedPassword = await bcrypt.hash(dto.password, 12)
 
 
-        const user = this.usersRepository.create({
-            ...dto, 
+        const user = this.userRepository.create({
+            ...dto,
             password: hashedPassword
         })
-        const saved = await this.usersRepository.save(user)
+        const saved = await this.userRepository.save(user)
 
         return this.mapToResponseDto(saved)
     }
@@ -40,16 +40,16 @@ export class UsersService {
             country: user.country,
             language: user.language,
             jobTitle: user.jobTitle,
-            aboutMe: user.aboutMe, 
+            aboutMe: user.aboutMe,
             createdAt: user.createdAt,
         }
     }
     async findAll(): Promise<User[]> {
-        return this.usersRepository.find();
+        return this.userRepository.find();
     }
 
     async findByEmail(email: string): Promise<User> {
-        const user = await this.usersRepository.findOne({
+        const user = await this.userRepository.findOne({
             where: { email },
         })
 
@@ -58,5 +58,14 @@ export class UsersService {
         }
 
         return user
+    }
+
+    async findByPhone(prefix: string, number: string) {
+        return this.userRepository.findOne({
+            where: {
+                phonePrefix: prefix,
+                phoneNumber: number
+            }
+        })
     }
 }

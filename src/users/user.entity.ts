@@ -11,6 +11,9 @@ export class User {
     @Column()
     password: string;
 
+    @Column()
+    phonePrefix: string;
+
     @Column({unique: true})
     phoneNumber: string;
 
