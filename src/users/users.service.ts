@@ -28,6 +28,10 @@ export class UsersService {
         return this.mapToResponseDto(saved)
     }
 
+    async save(user: User) {
+        return this.userRepository.save(user)
+    }
+
     private mapToResponseDto(user: User): UserResponseDto {
         return {
             id: user.id,

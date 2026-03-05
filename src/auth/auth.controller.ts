@@ -3,6 +3,8 @@ import { AuthService } from './auth.service'
 import { StartRegisterDto } from './dto/start-register.dto'
 import { CompleteRegisterDto } from './dto/complete-register.dto'
 import { LoginDto } from './dto/login.dto'
+import { ForgotPasswordDto } from './dto/forgot-password.dto'
+import { ResetPasswordDto } from './dto/reset-password.dto'
 
 @Controller('auth')
 export class AuthController {
@@ -14,13 +16,23 @@ export class AuthController {
   }
 
   @Post('register')
-  register(@Body() dto: CompleteRegisterDto){
+  register(@Body() dto: CompleteRegisterDto) {
     return this.authService.startRegistration(dto)
   }
 
   @Get('verify-email')
-  verify(@Query('token') token: string){
+  verify(@Query('token') token: string) {
     return this.authService.verifyEmail(token)
+  }
+
+  @Post('forgot-password')
+  forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(dto)
+  }
+
+  @Post('reset-password')
+  resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto)
   }
 
   @Post('login')

@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/
 import { Repository } from 'typeorm'
 import { JwtService } from '@nestjs/jwt'
 import { UsersService } from '../users/users.service'
-import { EmailService } from './email.service'
+import { EmailService } from '../email/email.service'
 import { VerificationService } from './verification.service'
 import { AuthGateway } from './auth.gateway'
 import { CompleteRegisterDto } from './dto/complete-register.dto'
@@ -11,7 +11,9 @@ import { LoginDto } from './dto/login.dto'
 import { UserInterest } from 'src/database/entities/user-interest.entity'
 import { Interest } from 'src/database/entities/interest.entity'
 import { InjectRepository } from '@nestjs/typeorm'
-import { R } from 'node_modules/@faker-js/faker/dist/airline-Dz1uGqgJ'
+import { PasswordResetService } from './password-reset.service'
+import { ForgotPasswordDto } from './dto/forgot-password.dto'
+import { ResetPasswordDto } from './dto/reset-password.dto'
 
 @Injectable()
 export class AuthService {
@@ -21,6 +23,7 @@ export class AuthService {
         private verificationService: VerificationService,
         private gateway: AuthGateway,
         private jwtService: JwtService,
+        private passwordResetService: PasswordResetService,
 
         @InjectRepository(UserInterest)
         private userInterestRepo: Repository<UserInterest>,
@@ -80,6 +83,38 @@ export class AuthService {
         }
 
         this.gateway.sendEmailVerified(user.email)
+
+        return { success: true }
+    }
+
+    async forgotPassword(dto: ForgotPasswordDto) {
+
+        const user = await this.usersService.findByEmail(dto.email)
+
+        if (!user) {
+            return { message: "If the email exists a reset link was sent" }
+        }
+
+        const token = await this.passwordResetService.createToken(dto.email)
+
+        await this.emailService.sendPasswordResetEmail(dto.email, token)
+
+        return {
+            message: "Reset email sent"
+        }
+    }
+
+    async resetPassword(dto: ResetPasswordDto) {
+
+        const email = await this.passwordResetService.consume(dto.token)
+
+        const user = await this.usersService.findByEmail(email)
+
+        const hashed = await bcrypt.hash(dto.password, 12)
+
+        user.password = hashed
+
+        await this.usersService.save(user)
 
         return { success: true }
     }

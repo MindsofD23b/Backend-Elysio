@@ -5,6 +5,7 @@ import { VerificationToken } from './entities/verification-token.entity'
 import { UserInterest } from './entities/user-interest.entity'
 import { InterestCategory } from './entities/interest-category.entity'
 import { Interest } from './entities/interest.entity'
+import { PasswordResetToken } from './entities/password-reset-token.entity'
 
 // Made with ChatGPT
 
@@ -18,7 +19,8 @@ export const AppDataSource = new DataSource({
         Interest,
         InterestCategory,
         UserInterest,
-        VerificationToken
+        VerificationToken,
+        PasswordResetToken
     ],
     
     migrations: ['src/migrations/*.ts'],

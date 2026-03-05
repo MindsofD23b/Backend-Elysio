@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
-import { EmailService } from './email.service'
+import { EmailService } from '../email/email.service'
 import { VerificationService } from './verification.service'
 import { AuthGateway } from './auth.gateway'
 
@@ -15,6 +15,9 @@ import { VerificationToken } from '../database/entities/verification-token.entit
 import { UserInterest } from 'src/database/entities/user-interest.entity'
 import { Interest } from 'src/database/entities/interest.entity'
 
+import { PasswordResetService } from './password-reset.service'
+import { PasswordResetToken } from '../database/entities/password-reset-token.entity'
+
 @Module({
   imports: [
     UsersModule,
@@ -24,14 +27,15 @@ import { Interest } from 'src/database/entities/interest.entity'
         expiresIn: process.env.JWT_EXPIRES_IN as any
       }
     }),
-    TypeOrmModule.forFeature([VerificationToken, UserInterest, Interest])
+    TypeOrmModule.forFeature([VerificationToken, UserInterest, Interest, PasswordResetToken])
   ],
   controllers: [AuthController],
   providers: [
     AuthService,
     EmailService,
     VerificationService,
-    AuthGateway
+    AuthGateway,
+    PasswordResetService
   ]
 })
 export class AuthModule { }
