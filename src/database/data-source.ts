@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { DataSource } from 'typeorm'
-import { User } from '../users/user.entity'
+import { User } from './entities/user.entity'
 
 // Made with ChatGPT
 

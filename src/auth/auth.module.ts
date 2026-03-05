@@ -10,7 +10,7 @@ import { AuthGateway } from './auth.gateway'
 import { UsersModule } from '../users/users.module'
 import { JwtModule } from '@nestjs/jwt'
 
-import { VerificationToken } from './verification-token.entity'
+import { VerificationToken } from '../database/entities/verification-token.entity'
 
 @Module({
   imports: [
