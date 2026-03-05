@@ -1,4 +1,5 @@
 import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common'
+import { Repository } from 'typeorm'
 import { JwtService } from '@nestjs/jwt'
 import { UsersService } from '../users/users.service'
 import { EmailService } from './email.service'
@@ -7,7 +8,10 @@ import { AuthGateway } from './auth.gateway'
 import { CompleteRegisterDto } from './dto/complete-register.dto'
 import * as bcrypt from 'bcrypt'
 import { LoginDto } from './dto/login.dto'
-
+import { UserInterest } from 'src/database/entities/user-interest.entity'
+import { Interest } from 'src/database/entities/interest.entity'
+import { InjectRepository } from '@nestjs/typeorm'
+import { R } from 'node_modules/@faker-js/faker/dist/airline-Dz1uGqgJ'
 
 @Injectable()
 export class AuthService {
@@ -17,6 +21,12 @@ export class AuthService {
         private verificationService: VerificationService,
         private gateway: AuthGateway,
         private jwtService: JwtService,
+
+        @InjectRepository(UserInterest)
+        private userInterestRepo: Repository<UserInterest>,
+
+        @InjectRepository(Interest)
+        private interestRepo: Repository<Interest>,
     ) { }
 
     async checkEmail(email: string) {
@@ -41,15 +51,33 @@ export class AuthService {
     }
 
     async verifyEmail(token: string) {
+
         const payload = await this.verificationService.consume(token)
+
         if (!payload) {
-            throw new BadRequestException('Invalid or expired token')
+            throw new BadRequestException('Invalid token')
         }
 
+        const { interests, ...userData } = payload
+
         const user = await this.usersService.create({
-            ...payload,
+            ...userData,
             emailVerified: true
         })
+
+        if (interests && interests.length > 0) {
+
+            const interestEntities = await this.interestRepo.findByIds(interests)
+
+            const userInterests = interestEntities.map(i =>
+                this.userInterestRepo.create({
+                    user,
+                    interest: i
+                })
+            )
+
+            await this.userInterestRepo.save(userInterests)
+        }
 
         this.gateway.sendEmailVerified(user.email)
 

@@ -1,11 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
+import { UserInterest } from './user-interest.entity';
 
 @Entity()
 export class User {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({unique: true})
+    @Column({ unique: true })
     email: string;
 
     @Column()
@@ -14,10 +15,10 @@ export class User {
     @Column()
     phonePrefix: string;
 
-    @Column({unique: true})
+    @Column({ unique: true })
     phoneNumber: string;
 
-    @Column({default: false})
+    @Column({ default: false })
     emailVerified: boolean;
 
     @Column()
@@ -29,7 +30,7 @@ export class User {
     @Column()
     lastName: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     dateOfBirth: Date;
 
     @Column()
@@ -44,18 +45,21 @@ export class User {
     @Column()
     aboutMe: string;
 
-    @Column({default: false})
+    @Column({ default: false })
     acceptedTerms: boolean;
 
-    @Column({default: false})
+    @Column({ default: false })
     acceptedPrivacyPolicy: boolean;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     lastLogin: Date;
 
-    @Column({default: 'free'})
+    @Column({ default: 'free' })
     subscriptionStatus: string;
 
     @CreateDateColumn()
     createdAt: Date;
+
+    @OneToMany(() => UserInterest, ui => ui.user)
+    userInterests: UserInterest[]
 }

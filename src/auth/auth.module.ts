@@ -12,6 +12,9 @@ import { JwtModule } from '@nestjs/jwt'
 
 import { VerificationToken } from '../database/entities/verification-token.entity'
 
+import { UserInterest } from 'src/database/entities/user-interest.entity'
+import { Interest } from 'src/database/entities/interest.entity'
+
 @Module({
   imports: [
     UsersModule,
@@ -21,7 +24,7 @@ import { VerificationToken } from '../database/entities/verification-token.entit
         expiresIn: process.env.JWT_EXPIRES_IN as any
       }
     }),
-    TypeOrmModule.forFeature([VerificationToken])
+    TypeOrmModule.forFeature([VerificationToken, UserInterest, Interest])
   ],
   controllers: [AuthController],
   providers: [
