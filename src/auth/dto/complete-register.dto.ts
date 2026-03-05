@@ -3,7 +3,8 @@ import {
     IsString,
     IsBoolean,
     IsDateString,
-    MinLength
+    MinLength,
+    IsArray,
 } from 'class-validator'
 
 export class CompleteRegisterDto {
@@ -50,4 +51,7 @@ export class CompleteRegisterDto {
 
     @IsBoolean()
     acceptedPrivacyPolicy: boolean
+
+    @IsArray()
+    interests: string[]
 }

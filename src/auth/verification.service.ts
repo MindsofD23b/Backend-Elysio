@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import { VerificationToken } from './verification-token.entity'
+import { VerificationToken } from '../database/entities/verification-token.entity'
 import { randomUUID } from 'crypto'
 
 // Made with ChatGPT and TypeORM documentation: https://typeorm.io/repository-api#repositorycreateentity-like---entity
