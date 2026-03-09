@@ -6,25 +6,27 @@ import { InterestCategory } from '../database/entities/interest-category.entity'
 
 @Injectable()
 export class InterestsService {
-    constructor(
-        @InjectRepository(Interest)
-        private interestRepository: Repository<Interest>,
+  constructor(
+    @InjectRepository(Interest)
+    private interestRepository: Repository<Interest>,
 
-        @InjectRepository(InterestCategory)
-        private categoryRepo: Repository<InterestCategory>,
-    ) { }
+    @InjectRepository(InterestCategory)
+    private categoryRepo: Repository<InterestCategory>,
+  ) {}
 
-    async getAll(){
-        const categories = await this.categoryRepo.find({ relations: ['interests'] })
-            const result = {}
+  async getAll() {
+    const categories = await this.categoryRepo.find({
+      relations: ['interests'],
+    });
+    const result = {};
 
-            for (const category of categories) {
-                result[category.title] = category.interests.map(i=> ({
-                    id: i.id,
-                    name: i.name
-                }))
-            }
+    for (const category of categories) {
+      result[category.title] = category.interests.map((i) => ({
+        id: i.id,
+        name: i.name,
+      }));
+    }
 
-            return result
-        }
+    return result;
+  }
 }
