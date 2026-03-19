@@ -15,6 +15,13 @@ const mockUserRepository = {
 describe('UsersService', () => {
   let service: UsersService;
 
+  const mockUserRepository = {
+    findOne: jest.fn(),
+    save: jest.fn(),
+    create: jest.fn(),
+    delete: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [

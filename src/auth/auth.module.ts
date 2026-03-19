@@ -15,25 +15,27 @@ import { VerificationToken } from '../database/entities/verification-token.entit
 import { UserInterest } from 'src/database/entities/user-interest.entity';
 import { Interest } from 'src/database/entities/interest.entity';
 
-import { PasswordResetService } from './password-reset.service';
-import { PasswordResetToken } from '../database/entities/password-reset-token.entity';
-
+import { PasswordResetService } from './password-reset.service'
+import { PasswordResetToken } from '../database/entities/password-reset-token.entity'
+import { ConfigService } from '@nestjs/config'
+import { User } from 'src/database/entities/user.entity'
 @Module({
   imports: [
-    UsersModule,
-    JwtModule.register({
-      // Made with NestJS documentation and ChatGPT
-      secret: process.env.JWT_SECRET,
-      signOptions: {
-        expiresIn: process.env.JWT_EXPIRES_IN as any,
-      },
-    }),
     TypeOrmModule.forFeature([
-      VerificationToken,
       UserInterest,
       Interest,
+      User,
+      VerificationToken,
       PasswordResetToken,
     ]),
+    UsersModule,
+    JwtModule.register({ // Made with NestJS documentation and ChatGPT
+      secret: process.env.JWT_SECRET,
+      signOptions: {
+        expiresIn: process.env.JWT_EXPIRES_IN as any
+      }
+    }),
+    TypeOrmModule.forFeature([VerificationToken, UserInterest, Interest, PasswordResetToken])
   ],
   controllers: [AuthController],
   providers: [
@@ -41,7 +43,7 @@ import { PasswordResetToken } from '../database/entities/password-reset-token.en
     EmailService,
     VerificationService,
     AuthGateway,
-    PasswordResetService,
-  ],
+    PasswordResetService
+  ]
 })
 export class AuthModule {}

@@ -19,6 +19,8 @@ lerna-debug.log*
 .env.test
 .env.production
 
+/coverage
+
 /.gito
 
 # temp directory

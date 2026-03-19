@@ -12,12 +12,13 @@ import { AuthGateway } from './auth.gateway';
 import { CompleteRegisterDto } from './dto/complete-register.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
-import { UserInterest } from 'src/database/entities/user-interest.entity';
-import { Interest } from 'src/database/entities/interest.entity';
+import { UserInterest } from '../database/entities/user-interest.entity';
+import { Interest } from '../database/entities/interest.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PasswordResetService } from './password-reset.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { User } from 'src/database/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -122,7 +123,7 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    let user;
+    let user: User | null;
 
     if (dto.email) {
       user = await this.usersService.findByEmail(dto.email);

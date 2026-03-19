@@ -13,7 +13,7 @@ export class VerificationService {
     private repo: Repository<VerificationToken>,
   ) {}
 
-  async create(email: string, payload: any) {
+  async create(email: string, payload: object) {
     const token = randomUUID();
 
     const record = this.repo.create({
@@ -27,7 +27,7 @@ export class VerificationService {
   }
 
   async consume(token: string) {
-    const record = await this.repo.findOne({
+    const record: VerificationToken | null = await this.repo.findOne({
       where: { token },
     });
 
