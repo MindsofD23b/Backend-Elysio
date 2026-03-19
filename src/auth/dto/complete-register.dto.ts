@@ -1,57 +1,56 @@
 import {
-    IsEmail,
-    IsString,
-    IsBoolean,
-    IsDateString,
-    MinLength,
-    IsArray,
-} from 'class-validator'
+  IsEmail,
+  IsString,
+  IsBoolean,
+  IsDateString,
+  MinLength,
+  IsArray,
+} from 'class-validator';
 
 export class CompleteRegisterDto {
+  @IsEmail()
+  email: string;
 
-    @IsEmail()
-    email: string
+  @IsString()
+  @MinLength(8)
+  password: string;
 
-    @IsString()
-    @MinLength(8)
-    password: string
+  @IsString()
+  phonePrefix: string;
 
-    @IsString()
-    phonePrefix: string
+  @IsString()
+  phoneNumber: string;
 
-    @IsString()
-    phoneNumber: string
+  @IsString()
+  gender: string;
 
-    @IsString()
-    gender: string
+  @IsString()
+  firstName: string;
 
-    @IsString()
-    firstName: string
+  @IsString()
+  lastName: string;
 
-    @IsString()
-    lastName: string
+  @IsDateString()
+  dateOfBirth: string;
 
-    @IsDateString()
-    dateOfBirth: string
+  @IsString()
+  country: string;
 
-    @IsString()
-    country: string
+  @IsString()
+  language: string;
 
-    @IsString()
-    language: string
+  @IsString()
+  jobTitle: string;
 
-    @IsString()
-    jobTitle: string
+  @IsString()
+  aboutMe: string;
 
-    @IsString()
-    aboutMe: string
+  @IsBoolean()
+  acceptedTerms: boolean;
 
-    @IsBoolean()
-    acceptedTerms: boolean
+  @IsBoolean()
+  acceptedPrivacyPolicy: boolean;
 
-    @IsBoolean()
-    acceptedPrivacyPolicy: boolean
-
-    @IsArray()
-    interests: string[]
+  @IsArray()
+  interests: string[];
 }

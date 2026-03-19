@@ -1,20 +1,24 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm'
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class PasswordResetToken {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @PrimaryGeneratedColumn('uuid')
-    id: string
+  @Column()
+  email: string;
 
-    @Column()
-    email: string
+  @Column({ unique: true })
+  token: string;
 
-    @Column({ unique: true })
-    token: string
+  @Column()
+  expiresAt: Date;
 
-    @Column()
-    expiresAt: Date
-
-    @CreateDateColumn()
-    createdAt: Date
+  @CreateDateColumn()
+  createdAt: Date;
 }

@@ -1,65 +1,71 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  OneToMany,
+} from 'typeorm';
 import { UserInterest } from './user-interest.entity';
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column({ unique: true })
-    email: string;
+  @Column({ unique: true })
+  email: string;
 
-    @Column()
-    password: string;
+  @Column()
+  password: string;
 
-    @Column()
-    phonePrefix: string;
+  @Column()
+  phonePrefix: string;
 
-    @Column({ unique: true })
-    phoneNumber: string;
+  @Column({ unique: true })
+  phoneNumber: string;
 
-    @Column({ default: false })
-    emailVerified: boolean;
+  @Column({ default: false })
+  emailVerified: boolean;
 
-    @Column()
-    gender: string;
+  @Column()
+  gender: string;
 
-    @Column()
-    firstName: string;
+  @Column()
+  firstName: string;
 
-    @Column()
-    lastName: string;
+  @Column()
+  lastName: string;
 
-    @Column({ nullable: true })
-    dateOfBirth: Date;
+  @Column({ nullable: true })
+  dateOfBirth: Date;
 
-    @Column()
-    country: string;
+  @Column()
+  country: string;
 
-    @Column()
-    language: string;
+  @Column()
+  language: string;
 
-    @Column()
-    jobTitle: string;
+  @Column()
+  jobTitle: string;
 
-    @Column()
-    aboutMe: string;
+  @Column()
+  aboutMe: string;
 
-    @Column({ default: false })
-    acceptedTerms: boolean;
+  @Column({ default: false })
+  acceptedTerms: boolean;
 
-    @Column({ default: false })
-    acceptedPrivacyPolicy: boolean;
+  @Column({ default: false })
+  acceptedPrivacyPolicy: boolean;
 
-    @Column({ nullable: true })
-    lastLogin: Date;
+  @Column({ nullable: true })
+  lastLogin: Date;
 
-    @Column({ default: 'free' })
-    subscriptionStatus: string;
+  @Column({ default: 'free' })
+  subscriptionStatus: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @OneToMany(() => UserInterest, ui => ui.user)
-    userInterests: UserInterest[]
+  @OneToMany(() => UserInterest, (ui) => ui.user)
+  userInterests: UserInterest[];
 }

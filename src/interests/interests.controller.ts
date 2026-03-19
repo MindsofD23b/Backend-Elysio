@@ -6,7 +6,7 @@ export class InterestsController {
   constructor(private readonly interestsService: InterestsService) {}
 
   @Get()
-  getInterests(){
-    return this.interestsService.getAll()
+  getInterests() {
+    return this.interestsService.getAll();
   }
 }

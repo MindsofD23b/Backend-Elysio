@@ -10,14 +10,10 @@ import { InterestsController } from './interests.controller';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      Interest,
-      InterestCategory,
-      UserInterest
-    ])
+    TypeOrmModule.forFeature([Interest, InterestCategory, UserInterest]),
   ],
   controllers: [InterestsController],
   providers: [InterestsService],
-  exports: [InterestsService]
+  exports: [InterestsService],
 })
 export class InterestsModule {}
