@@ -10,15 +10,15 @@ import { AuthGateway } from './auth.gateway';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 
-import { VerificationToken } from '../database/entities/verification-token.entity';
+import { VerificationToken } from './entities/verification-token.entity';
 
-import { UserInterest } from 'src/database/entities/user-interest.entity';
-import { Interest } from 'src/database/entities/interest.entity';
+import { UserInterest } from 'src/interests/entities/user-interest.entity';
+import { Interest } from 'src/interests/entities/interest.entity';
 
 import { PasswordResetService } from './password-reset.service'
-import { PasswordResetToken } from '../database/entities/password-reset-token.entity'
+import { PasswordResetToken } from './entities/password-reset-token.entity'
 import { ConfigService } from '@nestjs/config'
-import { User } from 'src/database/entities/user.entity'
+import { User } from 'src/users/entities/user.entity'
 @Module({
   imports: [
     TypeOrmModule.forFeature([

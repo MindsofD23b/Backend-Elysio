@@ -1,11 +1,14 @@
 import 'dotenv/config';
 import { DataSource } from 'typeorm';
-import { User } from './entities/user.entity';
-import { VerificationToken } from './entities/verification-token.entity';
-import { UserInterest } from './entities/user-interest.entity';
-import { InterestCategory } from './entities/interest-category.entity';
-import { Interest } from './entities/interest.entity';
-import { PasswordResetToken } from './entities/password-reset-token.entity';
+import { User } from '../users/entities/user.entity';
+import { VerificationToken } from '../auth/entities/verification-token.entity';
+import { UserInterest } from '../interests/entities/user-interest.entity';
+import { InterestCategory } from '../interests/entities/interest-category.entity';
+import { Interest } from '../interests/entities/interest.entity';
+import { PasswordResetToken } from '../auth/entities/password-reset-token.entity';
+import { ChatRoom } from '../chats/entities/chat-room.entity';
+import { ChatMessage } from '../chats/entities/chat-message.entity';
+import { ChatMessageKey } from '../chats/entities/chat-message-key.entity';
 
 // Made with ChatGPT
 
@@ -15,12 +18,15 @@ export const AppDataSource = new DataSource({
   url: process.env.DATABASE_URL,
 
   entities: [
-    User,
+    User, 
     Interest,
     InterestCategory,
     UserInterest,
     VerificationToken,
     PasswordResetToken,
+    ChatRoom,
+    ChatMessage,
+    ChatMessageKey,
   ],
 
   migrations: ['src/migrations/*.ts'],

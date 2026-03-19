@@ -7,8 +7,8 @@ import { AuthGateway } from './auth.gateway'
 import { JwtService } from '@nestjs/jwt'
 import { PasswordResetService } from './password-reset.service'
 import { getRepositoryToken } from '@nestjs/typeorm'
-import { UserInterest } from '../database/entities/user-interest.entity'
-import { Interest } from '../database/entities/interest.entity'
+import { UserInterest } from '../interests/entities/user-interest.entity'
+import { Interest } from '../interests/entities/interest.entity'
 import { BadRequestException, UnauthorizedException } from '@nestjs/common'
 
 describe('AuthService', () => {

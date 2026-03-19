@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PasswordResetToken } from '../database/entities/password-reset-token.entity';
+import { PasswordResetToken } from './entities/password-reset-token.entity';
 import { randomUUID } from 'crypto';
 
 @Injectable()

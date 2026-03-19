@@ -5,7 +5,7 @@ import {
   CreateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { UserInterest } from './user-interest.entity';
+import { UserInterest } from '../../interests/entities/user-interest.entity';
 
 @Entity()
 export class User {
@@ -65,6 +65,12 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({ type: 'text', nullable: true })
+  publicKey: string | null;
+
+  @Column({ type: 'text', nullable: true})
+  deviceToken: string | null;
 
   @OneToMany(() => UserInterest, (ui) => ui.user)
   userInterests: UserInterest[];

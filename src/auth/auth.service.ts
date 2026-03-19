@@ -12,13 +12,13 @@ import { AuthGateway } from './auth.gateway';
 import { CompleteRegisterDto } from './dto/complete-register.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
-import { UserInterest } from '../database/entities/user-interest.entity';
-import { Interest } from '../database/entities/interest.entity';
+import { UserInterest } from '../interests/entities/user-interest.entity';
+import { Interest } from '../interests/entities/interest.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PasswordResetService } from './password-reset.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { User } from 'src/database/entities/user.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
