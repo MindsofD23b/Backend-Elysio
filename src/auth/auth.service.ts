@@ -120,7 +120,6 @@ export class AuthService {
     }
 
     async login(dto: LoginDto) {
-
         let user
 
         if (dto.email) {
