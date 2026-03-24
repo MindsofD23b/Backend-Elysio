@@ -140,7 +140,7 @@ export class MediaService implements OnModuleInit {
                     announcedAddress: process.env.ANNOUNCED_IP,
                 },
             ],
-            enableUdp: true,
+            enableUdp: true,    
             enableTcp: true,
             preferUdp: true,
         });
