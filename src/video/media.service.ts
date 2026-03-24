@@ -128,16 +128,22 @@ export class MediaService implements OnModuleInit {
         if (!room) throw new Error(`Room ${roomId} not found`)
 
         const transport = await room.router.createWebRtcTransport({
-            listenIps: [
+            listenInfos: [
                 {
+                    protocol: 'udp',
                     ip: '0.0.0.0',
-                    announcedIp: '127.0.0.1', // ← Für LAN/Produktion: echte IP eintragen
+                    announcedAddress: process.env.ANNOUNCED_IP,
+                },
+                {
+                    protocol: 'tcp',
+                    ip: '0.0.0.0',
+                    announcedAddress: process.env.ANNOUNCED_IP,
                 },
             ],
             enableUdp: true,
             enableTcp: true,
             preferUdp: true,
-        })
+        });
 
         // Transport beim Peer speichern
         const peer = room.peers.get(peerId)

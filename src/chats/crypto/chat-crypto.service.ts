@@ -6,6 +6,8 @@ import {
     privateDecrypt,
     randomBytes,
     constants,
+    CipherGCM,
+    DecipherGCM,
 } from 'crypto';
 
 @Injectable()
@@ -14,7 +16,7 @@ export class ChatCryptoService {
         const aesKey = randomBytes(32);
         const iv = randomBytes(16);
 
-        const cipher = createCipheriv('aes-256-cbc', aesKey, iv);
+        const cipher = createCipheriv('aes-256-cbc', aesKey, iv) as CipherGCM;
 
         const encrypted = Buffer.concat([
             cipher.update(plainText, 'utf8'),

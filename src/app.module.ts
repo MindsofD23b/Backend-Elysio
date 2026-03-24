@@ -8,7 +8,7 @@ import { AppService } from './app.service';
 import { InterestsModule } from './interests/interests.module';
 import { EmailModule } from './email/email.module';
 import { VideoModule } from './video/video.module';
-import { ChatsModule } from './chats/chats.module';
+import { ChatModule } from './chats/chats.module';
 
 @Module({
   imports: [
@@ -29,7 +29,7 @@ import { ChatsModule } from './chats/chats.module';
     InterestsModule,
     EmailModule,
     VideoModule,
-    ChatsModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

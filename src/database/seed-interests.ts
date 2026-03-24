@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Interest } from '../interests/entities/interest.entity';
-import { InterestCategory } from './entities/interest-category.entity';
+import { InterestCategory } from '../interests/entities/interest-category.entity';
 
 // Made with ChatGPT
 async function bootstrap() {
