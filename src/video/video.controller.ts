@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common'
 import { MediaService } from './media.service'
 
 @Controller('video')
@@ -8,7 +8,7 @@ export class VideoController {
     @Post('room/:roomId/join')
     async joinRoom(
         @Param('roomId') roomId: string,
-        @Body('peerId') peerId: string,
+        @Query('peerId') peerId: string,
     ) {
         await this.mediaService.getOrCreateRoom(roomId)
         this.mediaService.joinRoom(roomId, peerId)
