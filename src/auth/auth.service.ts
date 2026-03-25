@@ -67,11 +67,12 @@ export class AuthService {
       throw new BadRequestException('Invalid token');
     }
 
-    const { interests, ...userData } = payload;
+    const { interests, ...userData } = payload as {
+      interests: Interest[];
+    } & CompleteRegisterDto;
 
     const user = await this.usersService.create({
       ...userData,
-      emailVerified: true,
     });
 
     if (interests && interests.length > 0) {

@@ -17,9 +17,10 @@ import { VerificationToken } from '../database/entities/verification-token.entit
 import { UserInterest } from 'src/database/entities/user-interest.entity';
 import { Interest } from 'src/database/entities/interest.entity';
 
-import { PasswordResetService } from './password-reset.service'
-import { PasswordResetToken } from '../database/entities/password-reset-token.entity'
-import { User } from 'src/database/entities/user.entity'
+import { PasswordResetService } from './password-reset.service';
+import { PasswordResetToken } from '../database/entities/password-reset-token.entity';
+import { User } from 'src/database/entities/user.entity';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -46,7 +47,12 @@ import { User } from 'src/database/entities/user.entity'
         };
       },
     }),
-    TypeOrmModule.forFeature([VerificationToken, UserInterest, Interest, PasswordResetToken])
+    TypeOrmModule.forFeature([
+      VerificationToken,
+      UserInterest,
+      Interest,
+      PasswordResetToken,
+    ]),
   ],
   controllers: [AuthController],
   providers: [
@@ -54,7 +60,7 @@ import { User } from 'src/database/entities/user.entity'
     EmailService,
     VerificationService,
     AuthGateway,
-    PasswordResetService
-  ]
+    PasswordResetService,
+  ],
 })
 export class AuthModule { }
