@@ -1,20 +1,28 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common'
-import { MediaService } from './media.service'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { MediaService } from './media.service';
 
 @Controller('video')
 export class VideoController {
   constructor(private readonly mediaService: MediaService) {}
 
-    @Post('room/:roomId/join')
-    async joinRoom(
-        @Param('roomId') roomId: string,
-        @Query('peerId') peerId: string,
-    ) {
-        await this.mediaService.getOrCreateRoom(roomId)
-        this.mediaService.joinRoom(roomId, peerId)
-        const rtpCapabilities = this.mediaService.getRtpCapabilities(roomId)
-        return { rtpCapabilities }
-    }
+  @Post('room/:roomId/join')
+  async joinRoom(
+    @Param('roomId') roomId: string,
+    @Query('peerId') peerId: string,
+  ) {
+    await this.mediaService.getOrCreateRoom(roomId);
+    this.mediaService.joinRoom(roomId, peerId);
+    const rtpCapabilities = this.mediaService.getRtpCapabilities(roomId);
+    return { rtpCapabilities };
+  }
 
   @Delete('room/:roomId/leave')
   leaveRoom(@Param('roomId') roomId: string, @Body('peerId') peerId: string) {
