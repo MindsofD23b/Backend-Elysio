@@ -227,21 +227,19 @@ export class MediaService implements OnModuleInit {
     const room = this.rooms.get(roomId);
 
     if (!producerId) {
-      throw new Error('Missing producerId')
+      throw new Error('Missing producerId');
     }
 
     if (!rtpCapabilities) {
-      throw new Error('Missing rtpCapabilities')
+      throw new Error('Missing rtpCapabilities');
     }
-    
+
     console.log('[createConsumer INPUT]', {
       roomId,
       transportId,
       producerId,
       rtpCapabilities,
-    })
-
-
+    });
 
     if (!room) throw new Error(`Room ${roomId} not found`);
 
