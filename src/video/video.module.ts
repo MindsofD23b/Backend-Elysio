@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module } from '@nestjs/common'
 import { MediaService } from './media.service'
 import { VideoController } from './video.controller'
 import { VideoService } from './video.service'
