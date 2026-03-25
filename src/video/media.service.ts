@@ -130,7 +130,7 @@ export class MediaService implements OnModuleInit {
       listenIps: [
         {
           ip: '0.0.0.0',
-          announcedIp: '127.0.0.1', // ← Für LAN/Produktion: echte IP eintragen
+          announcedIp: 'https://elysio.jamiepoeffel.ch', // ← Für LAN/Produktion: echte IP eintragen
         },
       ],
       enableUdp: true,
