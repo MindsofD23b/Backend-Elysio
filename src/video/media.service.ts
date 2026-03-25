@@ -33,7 +33,7 @@ export class MediaService implements OnModuleInit {
 
     this.worker.on('died', () => {
       this.logger.error('mediasoup worker died – restarting in 2s');
-      setTimeout(() => this.startWorker(), 2000);
+      setTimeout(() => void this.startWorker(), 2000);
     });
 
     this.logger.log('mediasoup worker started');

@@ -1,5 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { MediaService } from './media.service';
+import type {
+  DtlsParameters,
+  RtpCapabilities,
+  RtpParameters,
+} from 'mediasoup/types';
 
 @Controller('video')
 export class VideoController {
@@ -35,7 +40,7 @@ export class VideoController {
     @Param('roomId') roomId: string,
     @Param('transportId') transportId: string,
     @Body('peerId') peerId: string,
-    @Body('dtlsParameters') dtlsParameters: any,
+    @Body('dtlsParameters') dtlsParameters: DtlsParameters,
   ) {
     await this.mediaService.connectTransport(
       roomId,
@@ -52,7 +57,7 @@ export class VideoController {
     @Param('transportId') transportId: string,
     @Body('peerId') peerId: string,
     @Body('kind') kind: 'audio' | 'video',
-    @Body('rtpParameters') rtpParameters: any,
+    @Body('rtpParameters') rtpParameters: RtpParameters,
   ) {
     return this.mediaService.createProducer(
       roomId,
@@ -77,7 +82,7 @@ export class VideoController {
     @Param('transportId') transportId: string,
     @Body('peerId') peerId: string,
     @Body('producerId') producerId: string,
-    @Body('rtpCapabilities') rtpCapabilities: any,
+    @Body('rtpCapabilities') rtpCapabilities: RtpCapabilities,
   ) {
     return this.mediaService.createConsumer(
       roomId,

@@ -17,8 +17,9 @@ import { Interest } from 'src/database/entities/interest.entity';
 
 import { PasswordResetService } from './password-reset.service';
 import { PasswordResetToken } from '../database/entities/password-reset-token.entity';
-import { ConfigService } from '@nestjs/config';
 import { User } from 'src/database/entities/user.entity';
+import { constants } from 'src/config/constants';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -33,7 +34,7 @@ import { User } from 'src/database/entities/user.entity';
       // Made with NestJS documentation and ChatGPT
       secret: process.env.JWT_SECRET,
       signOptions: {
-        expiresIn: process.env.JWT_EXPIRES_IN as any,
+        expiresIn: constants.JWT_EXPIRES_IN,
       },
     }),
     TypeOrmModule.forFeature([
