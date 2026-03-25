@@ -42,7 +42,7 @@ export class VideoController {
   ) {
     try {
       return await this.mediaService.createTransport(roomId, peerId);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('[video/createTransport]', {
         roomId,
         peerId,
