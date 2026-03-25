@@ -225,6 +225,24 @@ export class MediaService implements OnModuleInit {
     rtpCapabilities: mediasoup.types.RtpCapabilities,
   ) {
     const room = this.rooms.get(roomId);
+
+    if (!producerId) {
+      throw new Error('Missing producerId')
+    }
+
+    if (!rtpCapabilities) {
+      throw new Error('Missing rtpCapabilities')
+    }
+    
+    console.log('[createConsumer INPUT]', {
+      roomId,
+      transportId,
+      producerId,
+      rtpCapabilities,
+    })
+
+
+
     if (!room) throw new Error(`Room ${roomId} not found`);
 
     // Prüfen ob der Router den Consumer unterstützt
