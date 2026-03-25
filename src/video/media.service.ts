@@ -88,21 +88,21 @@ export class MediaService implements OnModuleInit {
   // ─── Peer ─────────────────────────────────────────────────────────────────
 
   async joinRoom(roomId: string, peerId: string) {
-    const room = await this.getOrCreateRoom(roomId)
+    const room = await this.getOrCreateRoom(roomId);
 
     console.log('[joinRoom BEFORE]', {
       pid: process.pid,
       roomId,
       peerId,
       peers: [...room.peers.keys()],
-    })
+    });
 
     if (!room.peers.has(peerId)) {
       room.peers.set(peerId, {
         transports: new Map(),
         producers: new Map(),
         consumers: new Map(),
-      })
+      });
     }
 
     console.log('[joinRoom AFTER]', {
@@ -110,7 +110,7 @@ export class MediaService implements OnModuleInit {
       roomId,
       peerId,
       peers: [...room.peers.keys()],
-    })
+    });
   }
 
   leaveRoom(roomId: string, peerId: string) {
@@ -135,19 +135,19 @@ export class MediaService implements OnModuleInit {
   // ─── Transport ────────────────────────────────────────────────────────────
 
   async createTransport(roomId: string, peerId: string) {
-    const room = await this.getOrCreateRoom(roomId)
+    const room = await this.getOrCreateRoom(roomId);
 
     console.log('[createTransport CHECK]', {
       pid: process.pid,
       roomId,
       peerId,
       peers: [...room.peers.keys()],
-    })
+    });
 
-    const peer = room.peers.get(peerId)
+    const peer = room.peers.get(peerId);
 
     if (!peer) {
-      throw new Error(`Peer ${peerId} not in room ${roomId}`)
+      throw new Error(`Peer ${peerId} not in room ${roomId}`);
     }
 
     const transport = await room.router.createWebRtcTransport({
@@ -166,16 +166,16 @@ export class MediaService implements OnModuleInit {
       enableUdp: true,
       enableTcp: true,
       preferUdp: true,
-    })
+    });
 
-    peer.transports.set(transport.id, transport)
+    peer.transports.set(transport.id, transport);
 
     return {
       id: transport.id,
       iceParameters: transport.iceParameters,
       iceCandidates: transport.iceCandidates,
       dtlsParameters: transport.dtlsParameters,
-    }
+    };
   }
 
   async connectTransport(
