@@ -36,7 +36,7 @@ async function bootstrap() {
       phonePrefix: '+41',
       phoneNumber: '79' + faker.string.numeric(7),
       gender,
-      firstName: faker.person.firstName(gender as any),
+      firstName: faker.person.firstName(gender),
       lastName: faker.person.lastName(),
       dateOfBirth: faker.date.birthdate({
         min: 18,
@@ -64,4 +64,4 @@ async function bootstrap() {
   await app.close();
 }
 
-bootstrap();
+bootstrap().catch(() => console.error('Error'));
