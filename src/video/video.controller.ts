@@ -8,6 +8,11 @@ import {
   Query,
 } from '@nestjs/common';
 import { MediaService } from './media.service';
+import type {
+  DtlsParameters,
+  RtpParameters,
+  RtpCapabilities,
+} from 'mediasoup/types';
 
 @Controller('video')
 export class VideoController {
@@ -35,7 +40,16 @@ export class VideoController {
     @Param('roomId') roomId: string,
     @Body('peerId') peerId: string,
   ) {
-    return this.mediaService.createTransport(roomId, peerId);
+    try {
+      return await this.mediaService.createTransport(roomId, peerId);
+    } catch (error) {
+      console.error('[video/createTransport]', {
+        roomId,
+        peerId,
+        error,
+      });
+      throw error;
+    }
   }
 
   @Post('room/:roomId/transport/:transportId/connect')
