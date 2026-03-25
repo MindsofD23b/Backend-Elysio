@@ -5,7 +5,6 @@ import {
   Get,
   Param,
   Post,
-  Query,
 } from '@nestjs/common';
 import { MediaService } from './media.service';
 import type {
