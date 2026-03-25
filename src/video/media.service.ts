@@ -257,6 +257,14 @@ export class MediaService implements OnModuleInit {
     });
 
     const peer = this.getPeer(roomId, consumerPeerId);
+
+    const alreadyConsuming = [...peer.consumers.values()].some(
+      (c) => c.producerId === producerId,
+    );
+    if (alreadyConsuming) {
+      throw new Error(`Already consuming producer ${producerId}`);
+    }
+
     peer.consumers.set(consumer.id, consumer);
 
     consumer.on('transportclose', () => {
