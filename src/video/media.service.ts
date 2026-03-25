@@ -87,18 +87,30 @@ export class MediaService implements OnModuleInit {
 
   // ─── Peer ─────────────────────────────────────────────────────────────────
 
-  joinRoom(roomId: string, peerId: string) {
-    const room = this.rooms.get(roomId);
-    if (!room) throw new Error(`Room ${roomId} not found`);
+  async joinRoom(roomId: string, peerId: string) {
+    const room = await this.getOrCreateRoom(roomId)
+
+    console.log('[joinRoom BEFORE]', {
+      pid: process.pid,
+      roomId,
+      peerId,
+      peers: [...room.peers.keys()],
+    })
 
     if (!room.peers.has(peerId)) {
       room.peers.set(peerId, {
         transports: new Map(),
         producers: new Map(),
         consumers: new Map(),
-      });
-      this.logger.log(`Peer ${peerId} joined room ${roomId}`);
+      })
     }
+
+    console.log('[joinRoom AFTER]', {
+      pid: process.pid,
+      roomId,
+      peerId,
+      peers: [...room.peers.keys()],
+    })
   }
 
   leaveRoom(roomId: string, peerId: string) {
@@ -123,32 +135,47 @@ export class MediaService implements OnModuleInit {
   // ─── Transport ────────────────────────────────────────────────────────────
 
   async createTransport(roomId: string, peerId: string) {
-    const room = this.rooms.get(roomId);
-    if (!room) throw new Error(`Room ${roomId} not found`);
+    const room = await this.getOrCreateRoom(roomId)
+
+    console.log('[createTransport CHECK]', {
+      pid: process.pid,
+      roomId,
+      peerId,
+      peers: [...room.peers.keys()],
+    })
+
+    const peer = room.peers.get(peerId)
+
+    if (!peer) {
+      throw new Error(`Peer ${peerId} not in room ${roomId}`)
+    }
 
     const transport = await room.router.createWebRtcTransport({
-      listenIps: [
+      listenInfos: [
         {
+          protocol: 'udp',
           ip: '0.0.0.0',
-          announcedIp: 'https://elysio.jamiepoeffel.ch', // ← Für LAN/Produktion: echte IP eintragen
+          announcedAddress: 'elysio.jamiepoeffel.ch',
+        },
+        {
+          protocol: 'tcp',
+          ip: '0.0.0.0',
+          announcedAddress: 'elysio.jamiepoeffel.ch',
         },
       ],
       enableUdp: true,
       enableTcp: true,
       preferUdp: true,
-    });
+    })
 
-    // Transport beim Peer speichern
-    const peer = room.peers.get(peerId);
-    if (!peer) throw new Error(`Peer ${peerId} not in room ${roomId}`);
-    peer.transports.set(transport.id, transport);
+    peer.transports.set(transport.id, transport)
 
     return {
       id: transport.id,
       iceParameters: transport.iceParameters,
       iceCandidates: transport.iceCandidates,
       dtlsParameters: transport.dtlsParameters,
-    };
+    }
   }
 
   async connectTransport(
