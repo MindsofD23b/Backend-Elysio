@@ -12,7 +12,6 @@ import { AuthGateway } from './auth.gateway';
 
 import { UsersModule } from '../users/users.module';
 
-
 import { VerificationToken } from '../database/entities/verification-token.entity';
 import { UserInterest } from 'src/database/entities/user-interest.entity';
 import { Interest } from 'src/database/entities/interest.entity';
@@ -36,8 +35,8 @@ import { User } from 'src/database/entities/user.entity';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const secret = configService.getOrThrow<string>('JWT_SECRET');
-        const expiresIn =
-          (configService.get<string>('JWT_EXPIRES_IN') ?? '7d') as StringValue;
+        const expiresIn = (configService.get<string>('JWT_EXPIRES_IN') ??
+          '7d') as StringValue;
 
         return {
           secret,
@@ -63,4 +62,4 @@ import { User } from 'src/database/entities/user.entity';
     PasswordResetService,
   ],
 })
-export class AuthModule { }
+export class AuthModule {}
