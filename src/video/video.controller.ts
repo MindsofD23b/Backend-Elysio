@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common'
 import { MediaService } from './media.service'
+import type { DtlsParameters, RtpParameters, RtpCapabilities } from 'mediasoup/types'
 
 @Controller('video')
 export class VideoController {
