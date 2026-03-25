@@ -5,10 +5,14 @@ import type {
   RtpParameters,
   RtpCapabilities,
 } from 'mediasoup/types';
+import { VideoGateway } from './video.gateway';
 
 @Controller('video')
 export class VideoController {
-  constructor(private readonly mediaService: MediaService) {}
+  constructor(
+    private readonly mediaService: MediaService,
+    private readonly videoGateway: VideoGateway,
+  ) {}
 
   @Post('room/:roomId/join')
   async joinRoom(
@@ -75,15 +79,18 @@ export class VideoController {
     @Body('kind') kind: 'audio' | 'video',
     @Body('rtpParameters') rtpParameters: RtpParameters,
   ) {
-    return this.mediaService.createProducer(
+    const result = await this.mediaService.createProducer(
       roomId,
       peerId,
       transportId,
       kind,
       rtpParameters,
     );
-  }
 
+    this.videoGateway.notifyNewProducer(roomId, result.id, peerId);
+
+    return result;
+  }
   @Get('room/:roomId/producers')
   getProducers(
     @Param('roomId') roomId: string,
