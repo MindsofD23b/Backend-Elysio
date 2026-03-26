@@ -9,7 +9,7 @@ import { MediaService } from './media.service';
 
 @WebSocketGateway({ cors: { origin: '*' } })
 export class VideoGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private readonly mediaService: MediaService) { }
+  constructor(private readonly mediaService: MediaService) {}
 
   @WebSocketServer()
   server: Server;
