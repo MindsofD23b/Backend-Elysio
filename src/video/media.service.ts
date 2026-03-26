@@ -26,7 +26,8 @@ export class MediaService implements OnModuleInit {
 
   private async startWorker() {
     this.worker = await mediasoup.createWorker({
-      logLevel: 'warn',
+      logLevel: 'debug',
+      logTags: ['ice', 'dtls'],
       rtcMinPort: 10000,
       rtcMaxPort: 10999,
     });
@@ -154,13 +155,15 @@ export class MediaService implements OnModuleInit {
       listenInfos: [
         {
           protocol: 'udp',
-          ip: '0.0.0.0',
-          announcedAddress: 'elysio.jamiepoeffel.ch',
+          ip: process.env.PRIVATE_IP ?? '172.31.45.218',
+          announcedAddress: process.env.PUBLIC_IP ?? '18.197.14.214',
+          portRange: { min: 10000, max: 10999 },
         },
         {
           protocol: 'tcp',
-          ip: '0.0.0.0',
-          announcedAddress: 'elysio.jamiepoeffel.ch',
+          ip: process.env.PRIVATE_IP ?? '172.31.45.218',
+          announcedAddress: process.env.PUBLIC_IP ?? '18.197.14.214',
+          portRange: { min: 10000, max: 10999 },
         },
       ],
       enableUdp: true,
@@ -169,6 +172,18 @@ export class MediaService implements OnModuleInit {
     });
 
     peer.transports.set(transport.id, transport);
+
+    transport.on("icestatechange", (iceState) => {
+      this.logger.warn(`transport ${transport.id} ICE state ${iceState}`);
+    });
+
+    transport.on("iceselectedtuplechange", (tuple) => {
+      this.logger.warn(`transport ${transport.id} ICE tuple ${JSON.stringify(tuple)}`);
+    });
+
+    transport.on("dtlsstatechange", (dtlsState) => {
+      this.logger.warn(`transport ${transport.id} DTLS state ${dtlsState}`);
+    });
 
     return {
       id: transport.id,
