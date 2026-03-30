@@ -1,34 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
+
 import { MatchmakingService } from './matchmaking.service';
-import { CreateMatchmakingDto } from './dto/create-matchmaking.dto';
-import { UpdateMatchmakingDto } from './dto/update-matchmaking.dto';
+
+type AuthenticatedRequest = Request & { 
+  user: { 
+    sub: string; 
+    email: string;
+  } 
+};
 
 @Controller('matchmaking')
+@UseGuards(AuthGuard('jwt'))
 export class MatchmakingController {
   constructor(private readonly matchmakingService: MatchmakingService) {}
 
-  @Post()
-  create(@Body() createMatchmakingDto: CreateMatchmakingDto) {
-    return this.matchmakingService.create(createMatchmakingDto);
+  @Post('activate')
+  async activateCall(@Req() req: AuthenticatedRequest) {
+    return this.matchmakingService.activateCall(req.user.sub);
   }
 
-  @Get()
-  findAll() {
-    return this.matchmakingService.findAll();
+  @Post('deactivate')
+  async deactivateCall(@Req() req: AuthenticatedRequest) {
+    return this.matchmakingService.deactivateCall(req.user.sub);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.matchmakingService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMatchmakingDto: UpdateMatchmakingDto) {
-    return this.matchmakingService.update(+id, updateMatchmakingDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.matchmakingService.remove(+id);
+  @Get('me')
+  async getMyQueueStatus(@Req() req: AuthenticatedRequest) {
+    return this.matchmakingService.getMyQueueStatus(req.user.sub);
   }
 }

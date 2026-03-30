@@ -35,7 +35,7 @@ export class AuthService {
 
     @InjectRepository(Interest)
     private interestRepo: Repository<Interest>,
-  ) {}
+  ) { }
 
   async checkEmail(email: string) {
     const exists = await this.usersService
@@ -157,5 +157,9 @@ export class AuthService {
     return {
       token: this.jwtService.sign(payload),
     };
+  }
+
+  async validateJwtUser(userId: string) {
+    return this.usersService.findOneById(userId);
   }
 }

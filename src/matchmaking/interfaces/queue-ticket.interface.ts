@@ -1,4 +1,5 @@
-import { MatchmakingState } from "../enums/matchmaking-state.enum";
+import { MatchmakingState } from '../enums/matchmaking-state.enum';
+
 export interface QueueTicket {
     ticketId: string;
     userId: string;
