@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { InterestsModule } from './interests/interests.module';
 import { EmailModule } from './email/email.module';
 import { VideoModule } from './video/video.module';
+import { MatchmakingModule } from './matchmaking/matchmaking.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { VideoModule } from './video/video.module';
     InterestsModule,
     EmailModule,
     VideoModule,
+    MatchmakingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
