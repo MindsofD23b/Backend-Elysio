@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 import type { StringValue } from 'ms';
 
 import { AuthController } from './auth.controller';
@@ -9,19 +10,21 @@ import { AuthService } from './auth.service';
 import { EmailService } from '../email/email.service';
 import { VerificationService } from './verification.service';
 import { AuthGateway } from './auth.gateway';
+import { PasswordResetService } from './password-reset.service';
+import { JwtStrategy } from './jwt.strategy';
 
 import { UsersModule } from '../users/users.module';
 
 import { VerificationToken } from '../database/entities/verification-token.entity';
 import { UserInterest } from 'src/database/entities/user-interest.entity';
 import { Interest } from 'src/database/entities/interest.entity';
-
-import { PasswordResetService } from './password-reset.service';
 import { PasswordResetToken } from '../database/entities/password-reset-token.entity';
 import { User } from 'src/database/entities/user.entity';
 
 @Module({
   imports: [
+    ConfigModule,
+    PassportModule,
     TypeOrmModule.forFeature([
       UserInterest,
       Interest,
@@ -60,6 +63,8 @@ import { User } from 'src/database/entities/user.entity';
     VerificationService,
     AuthGateway,
     PasswordResetService,
+    JwtStrategy,
   ],
+  exports: [AuthService, PassportModule, JwtModule],
 })
 export class AuthModule {}
