@@ -68,9 +68,8 @@ export class MatchmakingService {
       currentState === MatchmakingState.CONNECTING ||
       currentState === MatchmakingState.IN_ROOM
     ) {
-      throw new BadRequestException(
-        `User cannot activate call while in state "${currentState}"`,
-      );
+      this.stateStore.set(userId, MatchmakingState.IDLE);
+      this.activeTickets.delete(userId);
     }
 
     const baseTicket = this.buildQueueTicketFromUser(user);
@@ -251,7 +250,7 @@ export class MatchmakingService {
     });
 
     return {
-      type: 'matched',  
+      type: 'matched',
       ticket,
       matchedUserId: match.userId,
       roomId,
