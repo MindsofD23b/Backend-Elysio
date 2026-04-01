@@ -1,21 +1,47 @@
-// import { WebSocketGateway, WebSocketServer, SubscribeMessage, } from '@nestjs/websockets';
-// import { VideoService } from './video.service';
+import {
+  WebSocketGateway,
+  WebSocketServer,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+} from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
+import { MediaService } from './media.service';
 
-// @WebSocketGateway()
-// export class VideoGateway {
+@WebSocketGateway({ cors: { origin: '*' } })
+export class VideoGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  constructor(private readonly mediaService: MediaService) {}
 
-//     constructor(private mediaService: VideoService) { }
+  @WebSocketServer()
+  server: Server;
 
-//     @WebSocketServer()
-//     server: Server
+  handleConnection(client: Socket) {
+    const { peerId, roomId } = client.handshake.query as {
+      peerId?: string;
+      roomId?: string;
+    };
 
-//     @SubscribeMessage('joinRoom')
-//     async joinRoom(client, data) {
+    client.data.peerId = peerId;
+    client.data.roomId = roomId;
 
-//         const routerRtpCapabilities = this.mediaService.router.rtpCapabilities
+    if (roomId) {
+      client.join(roomId);
+      console.log(`[gateway] peer ${peerId} joined socket room ${roomId}`);
+    }
+  }
 
-//         client.emit('routerCapabilities', routerRtpCapabilities)
+  handleDisconnect(client: Socket) {
+    const { peerId, roomId } = client.data as {
+      peerId?: string;
+      roomId?: string;
+    };
 
-//     }
+    if (peerId && roomId) {
+      this.mediaService.leaveRoom(roomId, peerId);
+      console.log(`[gateway] peer ${peerId} left socket room ${roomId}`);
+    }
+  }
 
-// }
+  notifyNewProducer(roomId: string, producerId: string, peerId: string) {
+    this.server.to(roomId).emit('new-producer', { producerId, peerId });
+  }
+}

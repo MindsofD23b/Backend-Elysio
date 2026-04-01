@@ -17,7 +17,7 @@ export class VerificationToken {
   token: string;
 
   @Column('json')
-  payload: any;
+  payload: unknown;
 
   @CreateDateColumn()
   createdAt: Date;

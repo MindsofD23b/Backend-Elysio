@@ -123,9 +123,9 @@ async function bootstrap() {
       await categoryRepo.save(category);
     }
 
-    const interests = data[categoryName];
+    const interests: unknown = data[categoryName];
 
-    for (const interestName of interests) {
+    for (const interestName of interests as Array<string>) {
       const exists = await interestRepo.findOne({
         where: { name: interestName },
       });
@@ -146,4 +146,4 @@ async function bootstrap() {
   await app.close();
 }
 
-bootstrap();
+bootstrap().catch(() => console.error('Error'));

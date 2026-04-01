@@ -35,7 +35,7 @@ export class AuthService {
 
     @InjectRepository(Interest)
     private interestRepo: Repository<Interest>,
-  ) {}
+  ) { }
 
   async checkEmail(email: string) {
     const exists = await this.usersService
@@ -67,11 +67,12 @@ export class AuthService {
       throw new BadRequestException('Invalid token');
     }
 
-    const { interests, ...userData } = payload;
+    const { interests, ...userData } = payload as {
+      interests: Interest[];
+    } & CompleteRegisterDto;
 
     const user = await this.usersService.create({
       ...userData,
-      emailVerified: true,
     });
 
     if (interests && interests.length > 0) {
@@ -156,5 +157,9 @@ export class AuthService {
     return {
       token: this.jwtService.sign(payload),
     };
+  }
+
+  async validateJwtUser(userId: string) {
+    return this.usersService.findOneById(userId);
   }
 }

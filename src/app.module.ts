@@ -9,6 +9,7 @@ import { InterestsModule } from './interests/interests.module';
 import { EmailModule } from './email/email.module';
 import { VideoModule } from './video/video.module';
 import { ChatModule } from './chats/chats.module';
+import { MatchmakingModule } from './matchmaking/matchmaking.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ChatModule } from './chats/chats.module';
     EmailModule,
     VideoModule,
     ChatModule,
+    MatchmakingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
