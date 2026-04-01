@@ -7,9 +7,9 @@ import { MatchmakingController } from './matchmaking.controller';
 import { MatchmakingService } from './matchmaking.service';
 import { MatchmakingGateway } from './matchmaking.gateway';
 
-import { User } from '../database/entities/user.entity';
-import { UserBlock } from '../database/entities/user-block.entity';
-import { MatchHistory } from '../database/entities/match-history.entity';
+import { User } from '../users/entities/user.entity';
+import { UserBlock } from '../interests/entities/user-block.entity';
+import { MatchHistory } from '../interests/entities/match-history.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, UserBlock, MatchHistory]), AuthModule],
