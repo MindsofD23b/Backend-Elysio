@@ -9,6 +9,8 @@ import { AuthGateway } from './auth.gateway';
 
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './jwt.strategy';
+import { PassportModule } from '@nestjs/passport';
 
 import { VerificationToken } from './entities/verification-token.entity';
 
@@ -17,7 +19,6 @@ import { Interest } from 'src/interests/entities/interest.entity';
 
 import { PasswordResetService } from './password-reset.service'
 import { PasswordResetToken } from './entities/password-reset-token.entity'
-import { ConfigService } from '@nestjs/config'
 import { User } from 'src/users/entities/user.entity'
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { User } from 'src/users/entities/user.entity'
       PasswordResetToken,
     ]),
     UsersModule,
+    PassportModule,
     JwtModule.register({ // Made with NestJS documentation and ChatGPT
       secret: process.env.JWT_SECRET,
       signOptions: {
@@ -43,7 +45,9 @@ import { User } from 'src/users/entities/user.entity'
     EmailService,
     VerificationService,
     AuthGateway,
-    PasswordResetService
-  ]
+    PasswordResetService,
+    JwtStrategy
+  ],
+  exports: [AuthService, PassportModule]
 })
 export class AuthModule {}

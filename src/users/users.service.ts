@@ -11,7 +11,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async create(dto: CreateUserDto): Promise<UserResponseDto> {
     const hashedPassword = await bcrypt.hash(dto.password, 12);
@@ -70,5 +70,24 @@ export class UsersService {
         phoneNumber: number,
       },
     });
+  }
+
+  async findById(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
+  async updatePublicKey(userId: string, publicKey: string): Promise<void> {
+    await this.userRepository.update({ id: userId }, { publicKey });
+  }
+
+  async getPublicKey(userId: string): Promise<string | null> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      select: ['id', 'publicKey'],
+    });
+    if (!user) throw new NotFoundException('User not found');
+    return user.publicKey;
   }
 }
