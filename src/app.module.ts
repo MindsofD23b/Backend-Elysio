@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { InterestsModule } from './interests/interests.module';
 import { EmailModule } from './email/email.module';
 import { VideoModule } from './video/video.module';
+import { ChatModule } from './chats/chats.module';
 import { MatchmakingModule } from './matchmaking/matchmaking.module';
 
 @Module({
@@ -29,6 +30,7 @@ import { MatchmakingModule } from './matchmaking/matchmaking.module';
     InterestsModule,
     EmailModule,
     VideoModule,
+    ChatModule,
     MatchmakingModule,
   ],
   controllers: [AppController],

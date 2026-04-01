@@ -2,27 +2,22 @@ import {
     Entity,
     ManyToOne,
     PrimaryGeneratedColumn,
-    Column,
+    Unique,
     CreateDateColumn,
 } from 'typeorm';
-import { User } from './user.entity';
+import { User } from '../../users/entities/user.entity';
 
+@Unique(['blocker', 'blocked'])
 @Entity()
-export class MatchHistory {
+export class UserBlock {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @ManyToOne(() => User)
-    userA: User;
+    blocker: User;
 
     @ManyToOne(() => User)
-    userB: User;
-
-    @Column({ type: 'varchar', nullable: true })
-    roomId: string | null;
-
-    @Column({ type: 'varchar', default: 'matched' })
-    outcome: string;
+    blocked: User;
 
     @CreateDateColumn()
     createdAt: Date;

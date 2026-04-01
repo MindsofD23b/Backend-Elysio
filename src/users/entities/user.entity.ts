@@ -5,9 +5,9 @@ import {
   CreateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { UserInterest } from './user-interest.entity';
-import { UserBlock } from './user-block.entity';
-import { MatchHistory } from './match-history.entity';
+import { UserInterest } from '../../interests/entities/user-interest.entity';
+import { UserBlock } from '../../interests/entities/user-block.entity';
+import { MatchHistory } from '../../interests/entities/match-history.entity';
 
 @Entity()
 export class User {
@@ -88,6 +88,12 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({ type: 'text', nullable: true })
+  publicKey: string | null;
+
+  @Column({ type: 'text', nullable: true})
+  deviceToken: string | null;
 
   @OneToMany(() => UserInterest, (ui) => ui.user)
   userInterests: UserInterest[];

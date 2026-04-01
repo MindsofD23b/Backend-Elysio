@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../database/entities/user.entity';
+import { User } from './entities/user.entity';
 import { UserResponseDto } from './dto/response-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -72,15 +72,22 @@ export class UsersService {
     });
   }
 
-  async findOneById(id: string): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: { id },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+  async findById(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
     return user;
   }
 
+  async updatePublicKey(userId: string, publicKey: string): Promise<void> {
+    await this.userRepository.update({ id: userId }, { publicKey });
+  }
+
+  async getPublicKey(userId: string): Promise<string | null> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      select: ['id', 'publicKey'],
+    });
+    if (!user) throw new NotFoundException('User not found');
+    return user.publicKey;
+  }
 }
