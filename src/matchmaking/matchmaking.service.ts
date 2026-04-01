@@ -7,9 +7,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
 import { Repository } from 'typeorm';
 
-import { User } from '../database/entities/user.entity';
-import { UserBlock } from '../database/entities/user-block.entity';
-import { MatchHistory } from '../database/entities/match-history.entity';
+import { User } from '../users/entities/user.entity';
+import { UserBlock } from '../interests/entities/user-block.entity';
+import { MatchHistory } from '../interests/entities/match-history.entity';
 
 import { MatchmakingState } from './enums/matchmaking-state.enum';
 import { QueueTicket } from './interfaces/queue-ticket.interface';

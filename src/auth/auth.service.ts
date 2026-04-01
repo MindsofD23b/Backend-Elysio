@@ -160,6 +160,6 @@ export class AuthService {
   }
 
   async validateJwtUser(userId: string) {
-    return this.usersService.findOneById(userId);
+    return this.usersService.findById(userId);
   }
 }

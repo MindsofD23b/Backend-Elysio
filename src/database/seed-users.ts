@@ -5,11 +5,11 @@ import { Repository } from 'typeorm';
 import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
 
-import { User } from './entities/user.entity';
-import { Interest } from './entities/interest.entity';
-import { UserInterest } from './entities/user-interest.entity';
-import { UserBlock } from './entities/user-block.entity';
-import { MatchHistory } from './entities/match-history.entity';
+import { User } from '../users/entities/user.entity';
+import { Interest } from '../interests/entities/interest.entity';
+import { UserInterest } from '../interests/entities/user-interest.entity';
+import { UserBlock } from '../interests/entities/user-block.entity';
+import { MatchHistory } from '../interests/entities/match-history.entity';
 
 type SwissCitySeed = {
   city: string;
