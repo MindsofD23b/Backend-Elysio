@@ -13,7 +13,8 @@ import { WsJwtGuard } from '../auth/ws-jwt.guard';
 
 
 @WebSocketGateway({
-    cors: { origin: '*' },
+    cors: { origin: "*" },
+    namespace: "/chat",
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer()
@@ -35,16 +36,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return { event: 'joined', roomId: payload.roomId };
     }
 
-    broadcastNewMessage(roomId: string, message: {
-        id: string;
-        senderId: string;
-        createdAt: string;
-        encryptedKeys: { userId: string; encryptedKey: string }[];
-        ciphertext: string;
-        iv: string;
-        authTag: string;
-    }) {
-    this.server.to(`room:${roomId}`).emit('new_message', message);
-}
+    broadcastNewMessage(
+        roomId: string,
+        message: {
+            id: string;
+            roomId: string;
+            senderId: string;
+            type: string;
+            createdAt: string;
+            encryptedKeys: { userId: string; encryptedKey: string }[];
+            ciphertext: string;
+            iv: string;
+            authTag: string;
+        },
+    ) {
+        this.server.to(`room:${roomId}`).emit("new_message", message);
+    }
 }
 

@@ -223,11 +223,13 @@ export class ChatService {
 
             this.chatGateway.broadcastNewMessage(roomId, {
                 id: savedMessage.id,
+                roomId,
                 senderId: savedMessage.senderId,
+                type: savedMessage.type,
                 createdAt: savedMessage.createdAt.toISOString(),
-                ciphertext: savedMessage.ciphertext ?? '',
-                iv: savedMessage.iv ?? '',
-                authTag: savedMessage.authTag ?? '',
+                ciphertext: savedMessage.ciphertext ?? "",
+                iv: savedMessage.iv ?? "",
+                authTag: savedMessage.authTag ?? "",
                 encryptedKeys: dto.encryptedKeys,
             });
 
