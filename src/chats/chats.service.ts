@@ -11,6 +11,7 @@ import { ChatMessageKey } from './entities/chat-message-key.entity';
 import { User } from '../users/entities/user.entity';
 import { SendTextMessageDTO } from './dto/send-text-message.dto';
 import { CreateChatRoomDTO } from './dto/create-chat-room.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 export interface GetMessagesQuery {
   before?: string;
@@ -36,6 +37,8 @@ export class ChatService {
 
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async findOrCreateRoom(
@@ -217,6 +220,25 @@ export class ChatService {
           updatedAt: new Date(),
         },
       );
+
+      const room = await this.roomRepo.findOne({ where: { id: roomId } });
+
+      if (room) {
+        const recipientId =
+          room.userAId === currentUserId ? room.userBId : room.userAId;
+        const sender = await this.userRepo.findOne({
+          where: { id: currentUserId },
+          select: ['firstName', 'lastName'],
+        });
+        const senderName = sender
+          ? `${sender.firstName} ${sender.lastName}`
+          : 'Someone';
+        await this.notificationsService.sendPushNotification(
+          recipientId,
+          `${senderName} has sent you a message`,
+          '',
+        );
+      }
 
       return savedMessage;
     });
