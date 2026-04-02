@@ -44,16 +44,35 @@ export class ChatService {
         currentUserId: string,
         dto: CreateChatRoomDTO,
     ): Promise<ChatRoom> {
+        if (!dto.otherUserId) {
+            throw new NotFoundException('otherUserId fehlt');
+        }
+
+        if (dto.otherUserId === currentUserId) {
+            throw new ForbiddenException('Du kannst keinen Chat mit dir selbst erstellen');
+        }
+
         const [userAId, userBId] = [currentUserId, dto.otherUserId].sort();
 
-        // Bestehenden Room suchen
         const existing = await this.roomRepo.findOne({
             where: { userAId, userBId },
         });
+
         if (existing) return existing;
 
-        // Neuen Room anlegen
-        const room = this.roomRepo.create({ userAId, userBId });
+        const otherUser = await this.userRepo.findOne({
+            where: { id: dto.otherUserId },
+        });
+
+        if (!otherUser) {
+            throw new NotFoundException('Gegenüberliegender User nicht gefunden');
+        }
+
+        const room = this.roomRepo.create({
+            userAId,
+            userBId,
+        });
+
         return this.roomRepo.save(room);
     }
     async getRoomsWithLastMessage(currentUserId: string) {
