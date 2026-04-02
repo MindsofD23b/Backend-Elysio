@@ -20,7 +20,7 @@ import { VideoModule } from './video/video.module';
       url: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false },
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
 
     UsersModule,
