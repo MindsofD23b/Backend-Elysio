@@ -22,7 +22,7 @@ import { MatchmakingModule } from './matchmaking/matchmaking.module';
       url: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false },
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
 
     UsersModule,
