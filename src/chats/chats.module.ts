@@ -10,7 +10,6 @@ import { AuthModule } from '../auth/auth.module';
 import { User } from 'src/users/entities/user.entity';
 import { ChatGateway } from './chat.gateway';
 
-
 @Module({
     imports: [
         TypeOrmModule.forFeature([ChatRoom, ChatMessage, ChatMessageKey, User]),
@@ -20,4 +19,4 @@ import { ChatGateway } from './chat.gateway';
     providers: [ChatService, ChatCryptoService, ChatGateway],
     exports: [ChatService, ChatGateway],
 })
-export class ChatModule {}  
+export class ChatModule {}

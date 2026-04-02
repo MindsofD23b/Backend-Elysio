@@ -10,8 +10,7 @@ import { ChatRoom } from '../chats/entities/chat-room.entity';
 import { ChatMessage } from '../chats/entities/chat-message.entity';
 import { ChatMessageKey } from '../chats/entities/chat-message-key.entity';
 import { UserBlock } from '../interests/entities/user-block.entity';
-  import { MatchHistory } from '../interests/entities/match-history.entity';
-
+import { MatchHistory } from '../interests/entities/match-history.entity';
 
 // Made with ChatGPT
 
@@ -21,7 +20,7 @@ export const AppDataSource = new DataSource({
   url: process.env.DATABASE_URL,
 
   entities: [
-    User, 
+    User,
     Interest,
     InterestCategory,
     UserInterest,

@@ -4,7 +4,7 @@ import {
     ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
-import { Repository, DataSource, In } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { ChatRoom } from './entities/chat-room.entity';
 import { ChatMessage } from './entities/chat-message.entity';
 import { ChatMessageKey } from './entities/chat-message-key.entity';
@@ -17,7 +17,6 @@ export interface GetMessagesQuery {
     before?: string;
     limit?: number;
 }
-
 
 const PLACEHOLDER_AVATAR = 'https://i.pravatar.cc/150';
 
@@ -40,7 +39,6 @@ export class ChatService {
         private readonly userRepo: Repository<User>,
 
         private readonly chatGateway: ChatGateway,
-
     ) { }
 
     async findOrCreateRoom(
@@ -52,7 +50,9 @@ export class ChatService {
         }
 
         if (dto.otherUserId === currentUserId) {
-            throw new ForbiddenException('Du kannst keinen Chat mit dir selbst erstellen');
+            throw new ForbiddenException(
+                'Du kannst keinen Chat mit dir selbst erstellen',
+            );
         }
 
         const [userAId, userBId] = [currentUserId, dto.otherUserId].sort();
@@ -79,7 +79,6 @@ export class ChatService {
         return this.roomRepo.save(room);
     }
     async getRoomsWithLastMessage(currentUserId: string) {
-
         const rooms = await this.roomRepo
             .createQueryBuilder('room')
             .where('room.userAId = :uid OR room.userBId = :uid', {
@@ -101,13 +100,11 @@ export class ChatService {
             .addOrderBy('msg.createdAt', 'DESC')
             .getMany();
 
-        const lastMsgByRoom = new Map(
-            lastMessages.map((m) => [m.roomId, m]),
-        );
+        const lastMsgByRoom = new Map(lastMessages.map((m) => [m.roomId, m]));
 
         const otherUserIds = rooms.map((r) =>
             r.userAId === currentUserId ? r.userBId : r.userAId,
-        )
+        );
         const uniqueOtherIDs = [...new Set(otherUserIds)];
 
         const otherUsers = await this.userRepo
@@ -117,8 +114,6 @@ export class ChatService {
             .getMany();
 
         const userById = new Map(otherUsers.map((u) => [u.id, u]));
-
-
 
         return rooms.map((room) => {
             const otherUserId =
@@ -175,7 +170,9 @@ export class ChatService {
                     .getMany()
                 : [];
 
-        const keyByMessage = new Map(keys.map((k) => [k.messageId, k.encryptedKey]));
+        const keyByMessage = new Map(
+            keys.map((k) => [k.messageId, k.encryptedKey]),
+        );
 
         return {
             messages: messages.map((msg) => ({
@@ -216,16 +213,22 @@ export class ChatService {
             );
             await manager.save(ChatMessageKey, keys);
 
-            await manager.update(ChatRoom, { id: roomId }, { updatedAt: new Date() } as any);
+            await manager.update(
+                ChatRoom,
+                { id: roomId },
+                {
+                    updatedAt: new Date(),
+                },
+            );
 
             this.chatGateway.broadcastNewMessage(roomId, {
                 id: savedMessage.id,
                 senderId: savedMessage.senderId,
                 createdAt: savedMessage.createdAt.toISOString(),
-                encryptedKeys: dto.encryptedKeys,
                 ciphertext: savedMessage.ciphertext ?? '',
                 iv: savedMessage.iv ?? '',
                 authTag: savedMessage.authTag ?? '',
+                encryptedKeys: dto.encryptedKeys,
             });
 
             return savedMessage;

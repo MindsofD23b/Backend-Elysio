@@ -1,7 +1,7 @@
 import { IsString, IsNotEmpty } from 'class-validator';
 
-export class UpdatePublicKeyDto {
+export class RegisterDeviceTokenDto {
   @IsString()
   @IsNotEmpty()
-  publicKey: string;
+  deviceToken: string;
 }

@@ -4,11 +4,11 @@ import { Request } from 'express';
 
 import { MatchmakingService } from './matchmaking.service';
 
-type AuthenticatedRequest = Request & { 
-  user: { 
-    sub: string; 
+type AuthenticatedRequest = Request & {
+  user: {
+    sub: string;
     email: string;
-  } 
+  };
 };
 
 @Controller('matchmaking')
@@ -27,7 +27,7 @@ export class MatchmakingController {
   }
 
   @Get('me')
-  async getMyQueueStatus(@Req() req: AuthenticatedRequest) {
+  getMyQueueStatus(@Req() req: AuthenticatedRequest) {
     return this.matchmakingService.getMyQueueStatus(req.user.sub);
   }
 }
