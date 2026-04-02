@@ -40,6 +40,7 @@
     "cipher": "^0.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.4",
+    "expo-server-sdk": "^6.1.0",
     "mediasoup": "^3.19.17",
     "mediasoup-client": "^3.18.7",
     "nodemailer": "^8.0.1",
