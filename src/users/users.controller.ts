@@ -13,7 +13,7 @@ export class UsersController {
     @Request() req: any,
     @Body() dto: UpdatePublicKeyDto,
   ) {
-    return this.usersService.updatePublicKey(req.user.id, dto.publicKey);
+    return this.usersService.updatePublicKey(req.user.pub, dto.publicKey);
   }
 
 }
