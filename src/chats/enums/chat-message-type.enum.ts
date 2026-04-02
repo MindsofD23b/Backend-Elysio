@@ -1,5 +1,4 @@
 export enum ChatMessageType {
-    TEXT = 'text',
-    Voice = 'voice',
+  TEXT = 'text',
+  Voice = 'voice',
 }
-

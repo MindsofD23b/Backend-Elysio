@@ -30,7 +30,7 @@ export class MatchmakingService {
     @InjectRepository(MatchHistory)
     private readonly matchHistoryRepository: Repository<MatchHistory>,
     private readonly matchmakingGateway: MatchmakingGateway,
-  ) { }
+  ) {}
 
   async activateCall(userId: string): Promise<ActivateCallResponse> {
     const user = await this.usersRepository.findOne({
@@ -88,7 +88,9 @@ export class MatchmakingService {
     const match = await this.findMatchForUser(ticket);
 
     if (!match) {
-      this.matchmakingGateway.notifyQueueWaiting(user.id, { ticketId: ticket.ticketId });
+      this.matchmakingGateway.notifyQueueWaiting(user.id, {
+        ticketId: ticket.ticketId,
+      });
 
       return {
         type: 'waiting',
@@ -117,10 +119,10 @@ export class MatchmakingService {
     return { success: true };
   }
 
-  async getMyQueueStatus(userId: string): Promise<{
+  getMyQueueStatus(userId: string): {
     state: MatchmakingState;
     ticket: QueueTicket | null;
-  }> {
+  } {
     return {
       state: this.getCurrentState(userId),
       ticket: this.activeTickets.get(userId) ?? null,
@@ -187,7 +189,10 @@ export class MatchmakingService {
         continue;
       }
 
-      const blocked = await this.isBlocked(currentTicket.userId, candidate.userId);
+      const blocked = await this.isBlocked(
+        currentTicket.userId,
+        candidate.userId,
+      );
 
       if (blocked) {
         continue;
@@ -251,7 +256,7 @@ export class MatchmakingService {
     });
 
     return {
-      type: 'matched',  
+      type: 'matched',
       ticket,
       matchedUserId: match.userId,
       roomId,

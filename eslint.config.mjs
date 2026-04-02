@@ -28,6 +28,8 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
   },

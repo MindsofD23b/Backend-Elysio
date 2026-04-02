@@ -35,7 +35,7 @@ export class AuthService {
 
     @InjectRepository(Interest)
     private interestRepo: Repository<Interest>,
-  ) { }
+  ) {}
 
   async checkEmail(email: string) {
     const exists = await this.usersService

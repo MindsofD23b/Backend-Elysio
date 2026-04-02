@@ -5,15 +5,11 @@ import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @Put('me/public-key')
   @UseGuards(AuthGuard('jwt'))
-  updatePublicKey(
-    @Request() req: any,
-    @Body() dto: UpdatePublicKeyDto,
-  ) {
+  updatePublicKey(@Request() req, @Body() dto: UpdatePublicKeyDto) {
     return this.usersService.updatePublicKey(req.user.sub, dto.publicKey);
   }
-
 }

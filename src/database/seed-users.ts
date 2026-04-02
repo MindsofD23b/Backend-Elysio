@@ -112,7 +112,7 @@ async function bootstrap() {
       phoneNumber: generateUniqueSwissPhone(existingUsers + i),
       emailVerified: true,
       gender,
-      firstName: faker.person.firstName(gender as 'male' | 'female'),
+      firstName: faker.person.firstName(gender),
       lastName: faker.person.lastName(),
       dateOfBirth: faker.date.birthdate({
         min: 18,
@@ -220,9 +220,13 @@ async function bootstrap() {
     await matchHistoryRepository.save(matchHistoriesToCreate);
   }
 
-  console.log(`${savedUsers.length} fake users with interests seeded successfully.`);
+  console.log(
+    `${savedUsers.length} fake users with interests seeded successfully.`,
+  );
   console.log(`${blocksToCreate.length} user blocks seeded successfully.`);
-  console.log(`${matchHistoriesToCreate.length} match history records seeded successfully.`);
+  console.log(
+    `${matchHistoriesToCreate.length} match history records seeded successfully.`,
+  );
 
   await app.close();
 }

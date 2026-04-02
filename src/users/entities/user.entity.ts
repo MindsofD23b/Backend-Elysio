@@ -53,7 +53,7 @@ export class User {
   @Column()
   aboutMe: string;
 
-  @Column({type: 'varchar', nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   interestedIn: string;
 
   @Column({ type: 'int', nullable: true })
@@ -62,7 +62,7 @@ export class User {
   @Column({ type: 'int', nullable: true })
   maxPreferredAge: number;
 
-  @Column({type: 'varchar', nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   city: string | null;
 
   @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
@@ -80,7 +80,7 @@ export class User {
   @Column({ default: false })
   acceptedPrivacyPolicy: boolean;
 
-  @Column({type: 'timestamp', nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   lastLogin: Date | null;
 
   @Column({ default: 'free' })
@@ -92,7 +92,7 @@ export class User {
   @Column({ type: 'text', nullable: true })
   publicKey: string | null;
 
-  @Column({ type: 'text', nullable: true})
+  @Column({ type: 'text', nullable: true })
   deviceToken: string | null;
 
   @OneToMany(() => UserInterest, (ui) => ui.user)

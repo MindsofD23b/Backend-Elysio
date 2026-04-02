@@ -12,10 +12,12 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  app.use(cors({
-    origin: true,
-    credentials: true,
-  }))
+  app.use(
+    cors({
+      origin: true,
+      credentials: true,
+    }),
+  );
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
-bootstrap().catch(() => console.error('Error'));
+bootstrap().catch((err) => console.error('Error', err));
