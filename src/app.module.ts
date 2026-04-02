@@ -10,6 +10,7 @@ import { EmailModule } from './email/email.module';
 import { VideoModule } from './video/video.module';
 import { ChatModule } from './chats/chats.module';
 import { MatchmakingModule } from './matchmaking/matchmaking.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { MatchmakingModule } from './matchmaking/matchmaking.module';
     VideoModule,
     ChatModule,
     MatchmakingModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

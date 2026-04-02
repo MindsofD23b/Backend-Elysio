@@ -9,14 +9,13 @@ import { ChatCryptoService } from './crypto/chat-crypto.service';
 import { AuthModule } from '../auth/auth.module';
 import { User } from 'src/users/entities/user.entity';
 
-
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([ChatRoom, ChatMessage, ChatMessageKey, User]),
-      AuthModule
-    ],
-    controllers: [ChatController],
-    providers: [ChatService, ChatCryptoService],
-    exports: [ChatService],
+  imports: [
+    TypeOrmModule.forFeature([ChatRoom, ChatMessage, ChatMessageKey, User]),
+    AuthModule,
+  ],
+  controllers: [ChatController],
+  providers: [ChatService, ChatCryptoService],
+  exports: [ChatService],
 })
-export class ChatModule {}  
+export class ChatModule {}

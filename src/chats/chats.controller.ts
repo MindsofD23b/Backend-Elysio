@@ -8,26 +8,22 @@ import {
   ParseUUIDPipe,
   UseGuards,
   Request,
-  Req
+  Req,
 } from '@nestjs/common';
 import { ChatService } from './chats.service';
 import type { GetMessagesQuery } from './chats.service';
 import { SendTextMessageDTO } from './dto/send-text-message.dto';
 import { CreateChatRoomDTO } from './dto/create-chat-room.dto';
-import { JwtStrategy } from '../auth/jwt.strategy';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('chat')
 @UseGuards(AuthGuard('jwt'))
 export class ChatController {
-  constructor(private readonly chatService: ChatService) { }
+  constructor(private readonly chatService: ChatService) {}
 
   // POST /chat/rooms  → Room erstellen oder vorhandenen zurückgeben
   @Post('rooms')
-  createRoom(
-    @Req() req,
-    @Body() dto: CreateChatRoomDTO,
-  ) {
+  createRoom(@Req() req, @Body() dto: CreateChatRoomDTO) {
     console.log('req.user', req.user);
     console.log('req.user?.id', req.user?.sub);
     console.log('dto', dto);
@@ -37,14 +33,14 @@ export class ChatController {
 
   // GET /chat/rooms  → Alle Chats mit letzter Nachricht
   @Get('rooms')
-  getRooms(@Request() req: any) {
+  getRooms(@Request() req) {
     return this.chatService.getRoomsWithLastMessage(req.user.sub);
   }
 
   // GET /chat/rooms/:roomId/messages?before=<ISO>&limit=30
   @Get('rooms/:roomId/messages')
   getMessages(
-    @Request() req: any,
+    @Request() req,
     @Param('roomId', ParseUUIDPipe) roomId: string,
     @Query() query: GetMessagesQuery,
   ) {
@@ -54,7 +50,7 @@ export class ChatController {
   // POST /chat/rooms/:roomId/messages  → Nachricht senden
   @Post('rooms/:roomId/messages')
   sendMessage(
-    @Request() req: any,
+    @Request() req,
     @Param('roomId', ParseUUIDPipe) roomId: string,
     @Body() dto: SendTextMessageDTO,
   ) {
@@ -63,7 +59,7 @@ export class ChatController {
 
   @Get('rooms/:roomId/keys')
   getRoomPublicKeys(
-    @Request() req: any,
+    @Request() req,
     @Param('roomId', ParseUUIDPipe) roomId: string,
   ) {
     return this.chatService.getRoomPublicKeys(req.user.sub, roomId);

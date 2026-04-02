@@ -13,7 +13,7 @@ import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 
 describe('AuthService', () => {
   let service: AuthService;
-    
+
   const mockUsersService = {
     findByEmail: jest.fn(),
     findByPhone: jest.fn(),

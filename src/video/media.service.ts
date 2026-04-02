@@ -173,15 +173,17 @@ export class MediaService implements OnModuleInit {
 
     peer.transports.set(transport.id, transport);
 
-    transport.on("icestatechange", (iceState) => {
+    transport.on('icestatechange', (iceState) => {
       this.logger.warn(`transport ${transport.id} ICE state ${iceState}`);
     });
 
-    transport.on("iceselectedtuplechange", (tuple) => {
-      this.logger.warn(`transport ${transport.id} ICE tuple ${JSON.stringify(tuple)}`);
+    transport.on('iceselectedtuplechange', (tuple) => {
+      this.logger.warn(
+        `transport ${transport.id} ICE tuple ${JSON.stringify(tuple)}`,
+      );
     });
 
-    transport.on("dtlsstatechange", (dtlsState) => {
+    transport.on('dtlsstatechange', (dtlsState) => {
       this.logger.warn(`transport ${transport.id} DTLS state ${dtlsState}`);
     });
 
