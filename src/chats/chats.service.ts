@@ -11,6 +11,7 @@ import { ChatMessageKey } from './entities/chat-message-key.entity';
 import { User } from '../users/entities/user.entity';
 import { SendTextMessageDTO } from './dto/send-text-message.dto';
 import { CreateChatRoomDTO } from './dto/create-chat-room.dto';
+import { ChatGateway } from './chat.gateway';
 
 export interface GetMessagesQuery {
     before?: string;
@@ -37,6 +38,8 @@ export class ChatService {
 
         @InjectRepository(User)
         private readonly userRepo: Repository<User>,
+
+        private readonly chatGateway: ChatGateway,
 
     ) { }
 
@@ -214,6 +217,16 @@ export class ChatService {
             await manager.save(ChatMessageKey, keys);
 
             await manager.update(ChatRoom, { id: roomId }, { updatedAt: new Date() } as any);
+
+            this.chatGateway.broadcastNewMessage(roomId, {
+                id: savedMessage.id,
+                senderId: savedMessage.senderId,
+                createdAt: savedMessage.createdAt.toISOString(),
+                encryptedKeys: dto.encryptedKeys,
+                ciphertext: savedMessage.ciphertext ?? '',
+                iv: savedMessage.iv ?? '',
+                authTag: savedMessage.authTag ?? '',
+            });
 
             return savedMessage;
         });
