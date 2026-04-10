@@ -16,7 +16,6 @@ import { WsJwtGuard } from '../auth/ws-jwt.guard';
         origin: true,
         credentials: true,
     },
-    namespace: "/chat",
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer()
