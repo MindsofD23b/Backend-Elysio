@@ -271,9 +271,9 @@ export class ChatService {
             type: savedMessage.type,
             createdAt: savedMessage.createdAt.toISOString(),
             encryptedKeys: dto.encryptedKeys,
-            ciphertext: savedMessage.ciphertext,
-            iv: savedMessage.iv,
-            authTag: savedMessage.authTag,
+            ciphertext: savedMessage.ciphertext!,
+            iv: savedMessage.iv!,
+            authTag: savedMessage.authTag!,
         });
 
         return savedMessage;
@@ -286,6 +286,7 @@ export class ChatService {
         }
         return room;
     }
+
 
     async getRoomPublicKeys(currentUserId: string, roomId: string) {
         const room = await this.assertRoomMember(currentUserId, roomId);
