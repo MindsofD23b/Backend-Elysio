@@ -13,12 +13,15 @@ import { WsJwtGuard } from '../auth/ws-jwt.guard';
 
 
 @WebSocketGateway({
-    cors: { origin: "*" },
+    cors: {
+        origin: true,
+        credentials: true,
+    },
     namespace: "/chat",
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer()
-    server: Server;
+    server!: Server;
 
     handleConnection(client: Socket) {
         console.log(`Client connected: ${client.id}`);
@@ -51,6 +54,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         },
     ) {
         this.server.to(`room:${roomId}`).emit("new_message", message);
+    }
+
+    @UseGuards(WsJwtGuard)
+    @SubscribeMessage('leave_room')
+    handleLeaveRoom(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() payload: { roomId: string },
+    ) {
+        client.leave(`room:${payload.roomId}`);
     }
 }
 
