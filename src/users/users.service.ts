@@ -4,14 +4,19 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { UserResponseDto } from './dto/response-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { MatchHistory } from '../matchmaking/entities/match-history.entity';
 import * as bcrypt from 'bcrypt';
+
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) {}
+
+    @InjectRepository(MatchHistory)
+    private matchHistoryRepository: Repository<MatchHistory>,
+  ) { }
 
   async create(dto: CreateUserDto): Promise<UserResponseDto> {
     const hashedPassword = await bcrypt.hash(dto.password, 12);
@@ -89,5 +94,25 @@ export class UsersService {
     });
     if (!user) throw new NotFoundException('User not found');
     return user.publicKey;
+  }
+
+  async callsLeft(userId: string): Promise<{ callsToday: number }> {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const count = await this.matchHistoryRepository
+      .createQueryBuilder('mh')
+      .where('mh.user_id = :userId', { userId })
+      .andWhere('mh.outcome_state = :state', { state: 'matched' })
+      .andWhere('mh.created_at BETWEEN :start AND :end', {
+        start: startOfDay,
+        end: endOfDay,
+      })
+      .getCount();
+
+    return { callsToday: count };
   }
 }

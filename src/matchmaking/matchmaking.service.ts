@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 
 import { User } from '../users/entities/user.entity';
 import { UserBlock } from '../interests/entities/user-block.entity';
-import { MatchHistory } from '../interests/entities/match-history.entity';
+import { MatchHistory } from './entities/match-history.entity';
 
 import { MatchmakingState } from './enums/matchmaking-state.enum';
 import { QueueTicket } from './interfaces/queue-ticket.interface';
