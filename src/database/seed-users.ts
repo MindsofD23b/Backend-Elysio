@@ -9,7 +9,7 @@ import { User } from '../users/entities/user.entity';
 import { Interest } from '../interests/entities/interest.entity';
 import { UserInterest } from '../interests/entities/user-interest.entity';
 import { UserBlock } from '../interests/entities/user-block.entity';
-import { MatchHistory } from '../interests/entities/match-history.entity';
+import { MatchHistory } from '../matchmaking/entities/match-history.entity';
 
 type SwissCitySeed = {
   city: string;
