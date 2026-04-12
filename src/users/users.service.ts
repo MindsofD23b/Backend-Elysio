@@ -106,7 +106,7 @@ export class UsersService {
     const count = await this.matchHistoryRepository
       .createQueryBuilder('mh')
       .where('(mh.userAId = :userId OR mh.userBId = :userId)', { userId })
-      .andWhere('mh.outcomeState = :state', { state: 'matched' })
+      .andWhere('mh.outcome = :state', { state: 'matched' })
       .andWhere('mh.createdAt BETWEEN :start AND :end', {
         start: startOfDay,
         end: endOfDay,
