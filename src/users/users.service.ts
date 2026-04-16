@@ -38,8 +38,8 @@ export class UsersService {
   private mapToResponseDto(user: User): UserResponseDto {
     return {
       id: user.id,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
+      email: user.email ?? null,
+      phoneNumber: user.phoneNumber ?? null,
       emailVerified: user.emailVerified,
       gender: user.gender,
       firstName: user.firstName,
@@ -114,5 +114,36 @@ export class UsersService {
       .getCount();
 
     return { callsToday: count };
+  }
+
+  async findByAppleId(appleId: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { appleId } });
+  }
+
+  async createAppleUser(data: {
+    appleId: string;
+    email: string | null;
+    firstName: string | null;
+    lastName: string | null;
+  }): Promise<User> {
+    const user = this.userRepository.create({
+      appleId: data.appleId,
+      email: data.email,
+      firstName: data.firstName ?? '',
+      lastName: data.lastName ?? '',
+      emailVerified: true,
+      password: null,
+      phonePrefix: null,
+      phoneNumber: null,
+      gender: '',
+      country: '',
+      language: '',
+      jobTitle: '',
+      aboutMe: '',
+      acceptedTerms: false,
+      acceptedPrivacyPolicy: false,
+    });
+
+    return this.userRepository.save(user);
   }
 }
