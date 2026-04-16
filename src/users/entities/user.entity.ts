@@ -98,8 +98,6 @@ export class User {
   @Column({ type: 'text', nullable: true })
   deviceToken: string | null;
 
-  @Column({ type: 'varchar', nullable: true, unique: true })
-  appleId: string | null;
 
   @OneToMany(() => UserInterest, (ui) => ui.user)
   userInterests: UserInterest[];
