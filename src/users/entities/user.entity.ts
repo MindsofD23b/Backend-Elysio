@@ -15,16 +15,16 @@ export class User {
   id: string;
 
   @Column({ unique: true })
-  email: string;
+  email: string | null;
 
   @Column()
-  password: string;
+  password: string | null;
 
   @Column()
-  phonePrefix: string;
+  phonePrefix: string | null;
 
   @Column({ unique: true })
-  phoneNumber: string;
+  phoneNumber: string | null;
 
   @Column({ default: false })
   emailVerified: boolean;
@@ -95,6 +95,9 @@ export class User {
   @Column({ type: 'text', nullable: true })
   deviceToken: string | null;
 
+  @Column({ type: 'varchar', nullable: true, unique: true })
+  appleId: string | null;
+
   @OneToMany(() => UserInterest, (ui) => ui.user)
   userInterests: UserInterest[];
 
@@ -106,4 +109,6 @@ export class User {
 
   @OneToMany(() => MatchHistory, () => undefined)
   matchesAsUserB: MatchHistory[];
+
+
 }

@@ -1,7 +1,7 @@
 export class UserResponseDto {
   id: string;
-  email: string;
-  phoneNumber: string;
+  email: string | null;
+  phoneNumber: string | null;
   emailVerified: boolean;
   gender: string;
   firstName: string;

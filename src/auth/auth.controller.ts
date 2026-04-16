@@ -5,10 +5,11 @@ import { CompleteRegisterDto } from './dto/complete-register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { AppleLoginDto } from './dto/apple-login.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post('check-email')
   checkEmail(@Body() dto: StartRegisterDto) {
@@ -38,5 +39,10 @@ export class AuthController {
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
+  }
+
+  @Post('apple')
+  appleLogin(@Body() dto: AppleLoginDto) {
+    return this.authService.appleLogin(dto);
   }
 }

@@ -19,6 +19,8 @@ import { PasswordResetService } from './password-reset.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { User } from 'src/users/entities/user.entity';
+import { AppleLoginDto } from './dto/apple-login.dto';
+import * as appleSignin from 'apple-signin-auth';
 
 @Injectable()
 export class AuthService {
@@ -35,7 +37,7 @@ export class AuthService {
 
     @InjectRepository(Interest)
     private interestRepo: Repository<Interest>,
-  ) {}
+  ) { }
 
   async checkEmail(email: string) {
     const exists = await this.usersService
@@ -88,7 +90,9 @@ export class AuthService {
       await this.userInterestRepo.save(userInterests);
     }
 
-    this.gateway.sendEmailVerified(user.email);
+    if (user.email) {
+      this.gateway.sendEmailVerified(user.email);
+    }
 
     return { success: true };
   }
@@ -143,6 +147,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    if (!user.password) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
     const isMatch = await bcrypt.compare(dto.password, user.password);
 
     if (!isMatch) {
@@ -161,5 +169,38 @@ export class AuthService {
 
   async validateJwtUser(userId: string) {
     return this.usersService.findById(userId);
+  }
+
+  async appleLogin(dto: AppleLoginDto) {
+    let payload: any;
+
+    try {
+      payload = await appleSignin.verifyIdToken(dto.identityToken, {
+        audience: process.env.APPLE_BUNDLE_ID, // e.g. 'com.yourapp.id'
+        ignoreExpiration: false,
+      });
+    } catch {
+      throw new UnauthorizedException('Invalid Apple token');
+    }
+
+    const appleUserId: string = payload.sub;
+    const email: string | null = payload.email ?? null;
+
+    let user = await this.usersService.findByAppleId(appleUserId);
+
+    if (!user) {
+      // Parse fullName if provided (only sent on first sign-in)
+      const [firstName, ...rest] = (dto.fullName ?? '').split(' ');
+      const lastName = rest.join(' ') || null;
+
+      user = await this.usersService.createAppleUser({
+        appleId: appleUserId,
+        email,
+        firstName: firstName || null,
+        lastName: lastName || null,
+      });
+    }
+
+    return this.generateToken(user.id);
   }
 }
