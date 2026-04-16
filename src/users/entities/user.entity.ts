@@ -14,17 +14,20 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', nullable: true, unique: true })
   email: string | null;
 
-  @Column()
+  @Column({ type: 'varchar', nullable: true })
   password: string | null;
 
-  @Column()
+  @Column({ type: 'varchar', nullable: true })
   phonePrefix: string | null;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', unique: true, nullable: true })
   phoneNumber: string | null;
+
+  @Column({ type: 'varchar', nullable: true, unique: true })
+  appleId: string | null;
 
   @Column({ default: false })
   emailVerified: boolean;
