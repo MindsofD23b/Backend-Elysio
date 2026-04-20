@@ -8,7 +8,7 @@ import {
     GetObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { R2_CLIENT } from './r2.module';
+import { R2_CLIENT } from '../users/users.module';
 import { randomUUID } from 'crypto';
 
 @Injectable()
