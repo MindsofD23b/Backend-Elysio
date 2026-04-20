@@ -1,11 +1,24 @@
-import { Put, UseGuards, Request, Controller, Body, Get } from '@nestjs/common';
+import { Put, UseGuards, Request, Controller, Body, Get, Param, Post, BadRequestException, UseInterceptors, UploadedFile, ParseUUIDPipe, Delete } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdatePublicKeyDto } from './dto/update-public-key.dto';
 import { UsersService } from './users.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+
+const imageFilter = (
+  _req: Express.Request,
+  file: Express.Multer.File,
+  cb: (err: Error | null, accept: boolean) => void,
+) => {
+  if (!file.mimetype.match(/^image\/(jpeg|png|webp)$/)) {
+    return cb(new BadRequestException('Only JPEG, PNG, or WebP allowed'), false);
+  }
+  cb(null, true);
+};
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Put('me/public-key')
   @UseGuards(AuthGuard('jwt'))
@@ -15,7 +28,38 @@ export class UsersController {
 
   @Get('calls-left')
   @UseGuards(AuthGuard('jwt'))
-  callsLeft(@Request() req){
+  callsLeft(@Request() req) {
     return this.usersService.callsLeft(req.user.sub);
+  }
+
+  @Post(':userId/photos')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+      fileFilter: imageFilter,
+    }),
+  )
+  async uploadPhoto(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.usersService.uploadProfilePicture(userId, file);
+  }
+
+  @Get(':userId/photos/:photoId/url')
+  async getPhotoUrl(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Param('photoId', ParseUUIDPipe) photoId: string,
+  ) {
+    return this.usersService.getSignedPhotoUrl(userId, photoId);
+  }
+
+  @Delete(':userId/photos/:photoId')
+  async deletePhoto(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Param('photoId', ParseUUIDPipe) photoId: string,
+  ) {
+    return this.usersService.deleteProfilePicture(userId, photoId);
   }
 }

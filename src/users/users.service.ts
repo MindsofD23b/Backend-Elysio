@@ -6,6 +6,8 @@ import { UserResponseDto } from './dto/response-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { MatchHistory } from '../matchmaking/entities/match-history.entity';
 import * as bcrypt from 'bcrypt';
+import { R2Service } from 'src/r2/r2.service';
+import { ProfilePicture } from './entities/profile-picture.entity';
 
 
 @Injectable()
@@ -16,6 +18,10 @@ export class UsersService {
 
     @InjectRepository(MatchHistory)
     private matchHistoryRepository: Repository<MatchHistory>,
+
+    @InjectRepository(ProfilePicture)
+    private readonly picRepo: Repository<ProfilePicture>,
+    private readonly r2: R2Service,
   ) { }
 
   async create(dto: CreateUserDto): Promise<UserResponseDto> {
@@ -145,5 +151,36 @@ export class UsersService {
     });
 
     return this.userRepository.save(user);
+  }
+
+  async uploadProfilePicture(userId: string, file: Express.Multer.File) {
+    const key = await this.r2.uploadProfilePicture(userId, file);
+
+    const pic = this.picRepo.create({ r2Key: key, user: { id: userId } });
+    await this.picRepo.save(pic);
+
+    return { id: pic.id, key };
+  }
+
+  async getSignedPhotoUrl(userId: string, photoId: string) {
+    const pic = await this.picRepo.findOne({
+      where: { id: photoId, user: { id: userId } },
+    });
+    if (!pic) throw new NotFoundException('Photo not found');
+
+    const url = await this.r2.getSignedUrl(pic.r2Key);
+    return { url };
+  }
+
+  async deleteProfilePicture(userId: string, photoId: string) {
+    const pic = await this.picRepo.findOne({
+      where: { id: photoId, user: { id: userId } },
+    });
+    if (!pic) throw new NotFoundException('Photo not found');
+
+    await this.r2.deleteFile(pic.r2Key);
+    await this.picRepo.remove(pic);
+
+    return { deleted: true };
   }
 }
