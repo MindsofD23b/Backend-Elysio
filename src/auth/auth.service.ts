@@ -53,12 +53,22 @@ export class AuthService {
   }
 
   async startRegistration(dto: CompleteRegisterDto) {
-    const token = await this.verificationService.create(dto.email, dto);
+    const { interests, ...userData } = dto as {
+      interests: number[];
+    } & CompleteRegisterDto;
+
+    const user = await this.usersService.create({ ...userData });
+
+    const token = await this.verificationService.create(dto.email, {
+      userId: user.id,
+      interests: interests ?? [],
+    });
 
     await this.emailService.sendVerificationEmail(dto.email, token);
 
     return {
       message: 'Verification email sent',
+      userId: user.id,
     };
   }
 
@@ -69,13 +79,15 @@ export class AuthService {
       throw new BadRequestException('Invalid token');
     }
 
-    const { interests, ...userData } = payload as {
-      interests: Interest[];
-    } & CompleteRegisterDto;
+    const { userId, interests } = payload as {
+      userId: string;
+      interests: number[];
+    };
 
-    const user = await this.usersService.create({
-      ...userData,
-    });
+    const user = await this.usersService.findById(userId);
+
+    user.emailVerified = true;
+    await this.usersService.save(user);
 
     if (interests && interests.length > 0) {
       const interestEntities = await this.interestRepo.findByIds(interests);
