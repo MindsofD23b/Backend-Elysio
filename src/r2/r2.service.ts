@@ -24,12 +24,17 @@ export class R2Service {
     }
 
     async uploadProfilePicture(
-        userId: string,
-        file: Express.Multer.File,
-    ): Promise<string> {
-        const ext = file.originalname.split('.').pop();
-        const key = `profiles/${userId}/${randomUUID()}.${ext}`;
+    userId: string,
+    file: Express.Multer.File,
+): Promise<string> {
+    console.log(`[R2] Upload start — userId: ${userId}, bucket: ${this.bucket}`);
+    console.log(`[R2] File: ${file.originalname}, size: ${file.size}, mime: ${file.mimetype}`);
 
+    const ext = file.originalname.split('.').pop();
+    const key = `profiles/${userId}/${randomUUID()}.${ext}`;
+    console.log(`[R2] Key: ${key}`);
+
+    try {
         await this.s3.send(
             new PutObjectCommand({
                 Bucket: this.bucket,
@@ -39,10 +44,14 @@ export class R2Service {
                 ContentLength: file.size,
             }),
         );
-
-        this.logger.log(`Uploaded ${key}`);
-        return key;
+        console.log(`[R2] PutObject success: ${key}`);
+    } catch (err) {
+        console.error(`[R2] PutObject failed:`, err);
+        throw err;
     }
+
+    return key;
+}
 
     async getSignedUrl(key: string, expiresIn = 3600): Promise<string> {
         return getSignedUrl(
