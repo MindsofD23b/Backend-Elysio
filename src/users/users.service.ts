@@ -122,6 +122,22 @@ export class UsersService {
     return { callsToday: count };
   }
 
+  async getProfile(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['profilePictures'],
+    });
+    if (!user) throw new NotFoundException('User not found');
+
+    const pic =
+      user.profilePictures?.find((p) => p.isPrimary) ??
+      user.profilePictures?.[0] ??
+      null;
+    const photoUrl = pic ? await this.r2.getSignedUrl(pic.r2Key) : null;
+
+    return { ...this.mapToResponseDto(user), photoUrl };
+  }
+
   async findByAppleId(appleId: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { appleId } });
   }

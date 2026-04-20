@@ -20,6 +20,12 @@ const imageFilter = (
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  getMe(@Request() req) {
+    return this.usersService.getProfile(req.user.sub);
+  }
+
   @Put('me/public-key')
   @UseGuards(AuthGuard('jwt'))
   updatePublicKey(@Request() req, @Body() dto: UpdatePublicKeyDto) {
