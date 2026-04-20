@@ -11,7 +11,6 @@ import { VideoModule } from './video/video.module';
 import { ChatModule } from './chats/chats.module';
 import { MatchmakingModule } from './matchmaking/matchmaking.module';
 import { NotificationsModule } from './notifications/notifications.module';
-import { R2Module } from './r2/r2.module';
 
 @Module({
   imports: [
@@ -38,7 +37,6 @@ import { R2Module } from './r2/r2.module';
     ChatModule,
     MatchmakingModule,
     NotificationsModule,
-    R2Module,
   ],
   controllers: [AppController],
   providers: [AppService],
