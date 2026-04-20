@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { S3Client } from '@aws-sdk/client-s3';
 import { R2Service } from './r2.service';
+import { R2_CLIENT } from './r2.constants';
 
-export const R2_CLIENT = 'R2_CLIENT';
+export { R2_CLIENT } from './r2.constants';
 
 @Module({
   providers: [
