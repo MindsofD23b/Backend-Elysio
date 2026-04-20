@@ -8,6 +8,7 @@ import {
 import { UserInterest } from '../../interests/entities/user-interest.entity';
 import { UserBlock } from '../../interests/entities/user-block.entity';
 import { MatchHistory } from '../../matchmaking/entities/match-history.entity';
+import { ProfilePicture } from './profile-picture.entity';
 
 @Entity()
 export class User {
@@ -89,6 +90,9 @@ export class User {
   @Column({ default: 'free' })
   subscriptionStatus: string;
 
+  @OneToMany(() => ProfilePicture, (pic) => pic.user, { cascade: true })
+  profilePictures: ProfilePicture[];
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -97,7 +101,6 @@ export class User {
 
   @Column({ type: 'text', nullable: true })
   deviceToken: string | null;
-
 
   @OneToMany(() => UserInterest, (ui) => ui.user)
   userInterests: UserInterest[];

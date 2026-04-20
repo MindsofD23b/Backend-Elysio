@@ -94,7 +94,7 @@ export class AuthService {
       this.gateway.sendEmailVerified(user.email);
     }
 
-    return { success: true };
+    return { success: true, userId: user.id };
   }
 
   async forgotPassword(dto: ForgotPasswordDto) {

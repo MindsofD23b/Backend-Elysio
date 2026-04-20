@@ -11,6 +11,7 @@ import { ChatMessage } from '../chats/entities/chat-message.entity';
 import { ChatMessageKey } from '../chats/entities/chat-message-key.entity';
 import { UserBlock } from '../interests/entities/user-block.entity';
 import { MatchHistory } from '../matchmaking/entities/match-history.entity';
+import { ProfilePicture } from '../users/entities/profile-picture.entity';
 
 // Made with ChatGPT
 
@@ -18,6 +19,7 @@ export const AppDataSource = new DataSource({
   type: 'postgres',
 
   url: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
 
   entities: [
     User,
@@ -31,6 +33,7 @@ export const AppDataSource = new DataSource({
     ChatMessageKey,
     UserBlock,
     MatchHistory,
+    ProfilePicture
   ],
 
   migrations: ['src/migrations/*.ts'],
