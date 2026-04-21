@@ -147,6 +147,8 @@ export class UsersService {
     email: string | null;
     firstName: string | null;
     lastName: string | null;
+    nickname?: string | null;
+    realUserStatus?: number | null;
   }): Promise<User> {
     const user = this.userRepository.create({
       appleId: data.appleId,
@@ -169,34 +171,34 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-async uploadProfilePicture(userId: string, file: Express.Multer.File) {
+  async uploadProfilePicture(userId: string, file: Express.Multer.File) {
     console.log(`[uploadProfilePicture] Called for userId: ${userId}`);
     console.log(`[uploadProfilePicture] File:`, {
-        originalname: file?.originalname,
-        mimetype: file?.mimetype,
-        size: file?.size,
-        hasBuffer: !!file?.buffer,
+      originalname: file?.originalname,
+      mimetype: file?.mimetype,
+      size: file?.size,
+      hasBuffer: !!file?.buffer,
     });
 
     if (!file?.buffer) {
-        console.error(`[uploadProfilePicture] No file or buffer — aborting`);
-        throw new Error("No file received");
+      console.error(`[uploadProfilePicture] No file or buffer — aborting`);
+      throw new Error("No file received");
     }
 
     try {
-        const key = await this.r2.uploadProfilePicture(userId, file);
-        console.log(`[uploadProfilePicture] R2 upload succeeded, key: ${key}`);
+      const key = await this.r2.uploadProfilePicture(userId, file);
+      console.log(`[uploadProfilePicture] R2 upload succeeded, key: ${key}`);
 
-        const pic = this.picRepo.create({ r2Key: key, user: { id: userId } });
-        await this.picRepo.save(pic);
-        console.log(`[uploadProfilePicture] Saved to DB, pic.id: ${pic.id}`);
+      const pic = this.picRepo.create({ r2Key: key, user: { id: userId } });
+      await this.picRepo.save(pic);
+      console.log(`[uploadProfilePicture] Saved to DB, pic.id: ${pic.id}`);
 
-        return { id: pic.id, key };
+      return { id: pic.id, key };
     } catch (err) {
-        console.error(`[uploadProfilePicture] Failed:`, err);
-        throw err;
+      console.error(`[uploadProfilePicture] Failed:`, err);
+      throw err;
     }
-}
+  }
 
   async getSignedPhotoUrl(userId: string, photoId: string) {
     const pic = await this.picRepo.findOne({
