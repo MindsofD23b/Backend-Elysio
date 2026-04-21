@@ -183,6 +183,7 @@ export class AuthService {
     return this.usersService.findById(userId);
   }
 
+
   async appleLogin(dto: AppleLoginDto) {
     let payload: any;
 
@@ -196,7 +197,7 @@ export class AuthService {
     }
 
     const appleUserId: string = payload.sub;
-    const email: string | null = payload.email ?? null;
+    const email: string | null = payload.email ?? dto.email ?? null;
 
     let user = await this.usersService.findByAppleId(appleUserId);
 
@@ -210,6 +211,8 @@ export class AuthService {
         email,
         firstName: firstName || null,
         lastName: lastName || null,
+        nickname: dto.nickname || null,
+        realUserStatus: dto.realUserStatus ?? null,
       });
     }
 
