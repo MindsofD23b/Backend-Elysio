@@ -15,12 +15,12 @@ import { UsersModule } from '../users/users.module';
 
 import { VerificationToken } from './entities/verification-token.entity';
 
-import { UserInterest } from 'src/interests/entities/user-interest.entity';
-import { Interest } from 'src/interests/entities/interest.entity';
+import { UserInterest } from '../interests/entities/user-interest.entity';
+import { Interest } from '../interests/entities/interest.entity';
 
 import { PasswordResetService } from './password-reset.service';
 import { PasswordResetToken } from './entities/password-reset-token.entity';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { JwtStrategy } from './jwt.strategy';
 
 @Module({

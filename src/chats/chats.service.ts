@@ -11,7 +11,7 @@ import { ChatMessageKey } from './entities/chat-message-key.entity';
 import { User } from '../users/entities/user.entity';
 import { SendTextMessageDTO } from './dto/send-text-message.dto';
 import { CreateChatRoomDTO } from './dto/create-chat-room.dto';
-import { NotificationsService } from 'src/notifications/notifications.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { ChatGateway } from './chat.gateway';
 
 export interface GetMessagesQuery {
