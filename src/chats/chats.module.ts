@@ -7,7 +7,7 @@ import { ChatService } from './chats.service';
 import { ChatController } from './chats.controller';
 import { ChatCryptoService } from './crypto/chat-crypto.service';
 import { AuthModule } from '../auth/auth.module';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { ChatGateway } from './chat.gateway';
 import { NotificationsModule } from '../notifications/notifications.module';
 

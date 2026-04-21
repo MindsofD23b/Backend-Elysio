@@ -18,7 +18,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PasswordResetService } from './password-reset.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { AppleLoginDto } from './dto/apple-login.dto';
 import * as appleSignin from 'apple-signin-auth';
 

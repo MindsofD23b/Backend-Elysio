@@ -6,7 +6,7 @@ import { UserResponseDto } from './dto/response-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { MatchHistory } from '../matchmaking/entities/match-history.entity';
 import * as bcrypt from 'bcrypt';
-import { R2Service } from 'src/r2/r2.service';
+import { R2Service } from '../r2/r2.service';
 import { ProfilePicture } from './entities/profile-picture.entity';
 
 
