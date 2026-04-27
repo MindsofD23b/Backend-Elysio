@@ -6,7 +6,9 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { MediaService } from './media.service';
 import type {
   DtlsParameters,
@@ -15,6 +17,7 @@ import type {
 } from 'mediasoup/types';
 import { VideoGateway } from './video.gateway';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('video')
 export class VideoController {
   constructor(

@@ -4,17 +4,44 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
+import { Logger } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
 import { MediaService } from './media.service';
 
-@WebSocketGateway({ cors: { origin: '*' } })
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') ?? false;
+
+@WebSocketGateway({ cors: { origin: allowedOrigins } })
 export class VideoGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private readonly mediaService: MediaService) {}
+  private readonly logger = new Logger(VideoGateway.name);
+
+  constructor(
+    private readonly mediaService: MediaService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   @WebSocketServer()
   server: Server;
 
   handleConnection(client: Socket) {
+    const token =
+      client.handshake.auth?.token ||
+      client.handshake.headers?.authorization?.replace('Bearer ', '');
+
+    if (!token) {
+      this.logger.warn('Video socket rejected: missing token');
+      client.disconnect();
+      return;
+    }
+
+    try {
+      this.jwtService.verify(token);
+    } catch {
+      this.logger.warn('Video socket rejected: invalid token');
+      client.disconnect();
+      return;
+    }
+
     const { peerId, roomId } = client.handshake.query as {
       peerId?: string;
       roomId?: string;
@@ -25,7 +52,7 @@ export class VideoGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if (roomId) {
       client.join(roomId);
-      console.log(`[gateway] peer ${peerId} joined socket room ${roomId}`);
+      this.logger.log(`peer ${peerId} joined socket room ${roomId}`);
     }
   }
 
@@ -37,7 +64,7 @@ export class VideoGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if (peerId && roomId) {
       this.mediaService.leaveRoom(roomId, peerId);
-      console.log(`[gateway] peer ${peerId} left socket room ${roomId}`);
+      this.logger.log(`peer ${peerId} left socket room ${roomId}`);
     }
   }
 
