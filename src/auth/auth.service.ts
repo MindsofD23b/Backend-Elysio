@@ -110,19 +110,14 @@ export class AuthService {
   }
 
   async forgotPassword(dto: ForgotPasswordDto) {
-    const user = await this.usersService.findByEmail(dto.email);
+    const user = await this.usersService.findByEmail(dto.email).catch(() => null);
 
-    if (!user) {
-      return { message: 'If the email exists a reset link was sent' };
+    if (user) {
+      const token = await this.passwordResetService.createToken(dto.email);
+      await this.emailService.sendPasswordResetEmail(dto.email, token);
     }
 
-    const token = await this.passwordResetService.createToken(dto.email);
-
-    await this.emailService.sendPasswordResetEmail(dto.email, token);
-
-    return {
-      message: 'Reset email sent',
-    };
+    return { message: 'If the email exists, a reset link was sent' };
   }
 
   async resetPassword(dto: ResetPasswordDto) {

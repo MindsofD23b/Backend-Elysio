@@ -1,9 +1,8 @@
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 
-// Made with ChatGPT
 @WebSocketGateway({
-  cors: true,
+  cors: { origin: process.env.ALLOWED_ORIGINS?.split(',') ?? false },
 })
 export class AuthGateway {
   @WebSocketServer()

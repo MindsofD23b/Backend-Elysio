@@ -1,4 +1,4 @@
-import { Put, UseGuards, Request, Controller, Body, Get, Param, Post, Patch, BadRequestException, UseInterceptors, UploadedFile, ParseUUIDPipe, Delete } from '@nestjs/common';
+import { Put, UseGuards, Request, Controller, Body, Get, Param, Post, BadRequestException, UseInterceptors, UploadedFile, ParseUUIDPipe, Delete } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdatePublicKeyDto } from './dto/update-public-key.dto';
 import { UsersService } from './users.service';
@@ -38,6 +38,7 @@ export class UsersController {
     return this.usersService.callsLeft(req.user.sub);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post(':userId/photos')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -53,6 +54,7 @@ export class UsersController {
     return this.usersService.uploadProfilePicture(userId, file);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get(':userId/photos/:photoId/url')
   async getPhotoUrl(
     @Param('userId', ParseUUIDPipe) userId: string,
@@ -61,22 +63,13 @@ export class UsersController {
     return this.usersService.getSignedPhotoUrl(userId, photoId);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':userId/photos/:photoId')
   async deletePhoto(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Param('photoId', ParseUUIDPipe) photoId: string,
   ) {
     return this.usersService.deleteProfilePicture(userId, photoId);
-  }
-
-  @Patch('change-subscription')
-  @UseGuards(AuthGuard('jwt'))
-  async changeSubscription(
-    @Request() req,
-    @Body() body: { plan: 'free' | 'premium' | 'gold' },
-  )
-  {
-    return this.usersService.changeSubscription(req.user.sub, body.plan);
   }
 
 }
