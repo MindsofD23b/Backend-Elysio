@@ -221,4 +221,15 @@ export class UsersService {
 
     return { deleted: true };
   }
+
+  async changeSubscription(userId: string, newPlan: 'free' | 'premium' | 'gold') {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    user.subscriptionStatus = newPlan;
+    await this.userRepository.save(user);
+    return { subscriptionStatus: user.subscriptionStatus };
+  }
+
 }
