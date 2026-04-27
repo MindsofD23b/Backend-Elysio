@@ -22,8 +22,10 @@ export class RevenueCatController {
   @HttpCode(200)
   async handleWebhook(
     @Headers('authorization') authorization: string,
-    @Body() payload: RevenueCatWebhookPayload,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    @Body() payload: any,
   ) {
+    const typedPayload = payload as RevenueCatWebhookPayload;
     const secret = process.env.REVENUECAT_WEBHOOK_SECRET;
 
     if (!secret || authorization !== secret) {
@@ -31,7 +33,7 @@ export class RevenueCatController {
       throw new UnauthorizedException();
     }
 
-    await this.revenueCatService.handleEvent(payload);
+    await this.revenueCatService.handleEvent(typedPayload);
 
     return { received: true };
   }
