@@ -59,7 +59,10 @@ describe('AuthService', () => {
         AuthService,
         { provide: UsersService, useValue: mockUsersService },
         { provide: EmailService, useValue: mockEmailService },
-        { provide: VerificationService, useValue: mockVerificationService },
+        {
+          provide: VerificationService,
+          useValue: mockVerificationService,
+        },
         { provide: AuthGateway, useValue: mockGateway },
         { provide: JwtService, useValue: mockJwtService },
         { provide: PasswordResetService, useValue: mockPasswordReset },
@@ -181,7 +184,9 @@ describe('AuthService', () => {
   });
 
   it('11 forgotPassword should create reset token', async () => {
-    mockUsersService.findByEmail.mockResolvedValue({ email: 'test@test.com' });
+    mockUsersService.findByEmail.mockResolvedValue({
+      email: 'test@test.com',
+    });
 
     await service.forgotPassword({
       email: 'test@test.com',
@@ -191,7 +196,9 @@ describe('AuthService', () => {
   });
 
   it('12 forgotPassword should send reset email', async () => {
-    mockUsersService.findByEmail.mockResolvedValue({ email: 'test@test.com' });
+    mockUsersService.findByEmail.mockResolvedValue({
+      email: 'test@test.com',
+    });
 
     await service.forgotPassword({
       email: 'test@test.com',
