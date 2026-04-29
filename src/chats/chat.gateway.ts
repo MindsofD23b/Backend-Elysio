@@ -12,11 +12,11 @@ import { UseGuards } from '@nestjs/common';
 import { WsJwtGuard } from '../auth/ws-jwt.guard';
 
 @WebSocketGateway({
-    cors: { origin: process.env.ALLOWED_ORIGINS?.split(',') ?? false },
+  cors: { origin: process.env.ALLOWED_ORIGINS?.split(',') ?? false },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-    @WebSocketServer()
-    server!: Server;
+  @WebSocketServer()
+  server!: Server;
 
   handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
@@ -36,29 +36,29 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return { event: 'joined', roomId: payload.roomId };
   }
 
-    broadcastNewMessage(
-        roomId: string,
-        message: {
-            id: string;
-            roomId: string;
-            senderId: string;
-            type: string;
-            createdAt: string;
-            encryptedKeys: { userId: string; encryptedKey: string }[];
-            ciphertext: string;
-            iv: string;
-            authTag: string;
-        },
-    ) {
-        this.server.to(`room:${roomId}`).emit("new_message", message);
-    }
+  broadcastNewMessage(
+    roomId: string,
+    message: {
+      id: string;
+      roomId: string;
+      senderId: string;
+      type: string;
+      createdAt: string;
+      encryptedKeys: { userId: string; encryptedKey: string }[];
+      ciphertext: string;
+      iv: string;
+      authTag: string;
+    },
+  ) {
+    this.server.to(`room:${roomId}`).emit('new_message', message);
+  }
 
-    @UseGuards(WsJwtGuard)
-    @SubscribeMessage('leave_room')
-    handleLeaveRoom(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() payload: { roomId: string },
-    ) {
-        client.leave(`room:${payload.roomId}`);
-    }
+  @UseGuards(WsJwtGuard)
+  @SubscribeMessage('leave_room')
+  handleLeaveRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { roomId: string },
+  ) {
+    client.leave(`room:${payload.roomId}`);
+  }
 }

@@ -31,7 +31,6 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-member-access': 'warn',
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
-      'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
   },
 );

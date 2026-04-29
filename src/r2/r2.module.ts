@@ -11,15 +11,16 @@ export { R2_CLIENT } from './r2.constants';
     {
       provide: R2_CLIENT,
       inject: [ConfigService],
-      useFactory: (config: ConfigService) =>
-        new S3Client({
+      useFactory: (config: ConfigService) => {
+        return new S3Client({
           region: 'auto',
           endpoint: `https://${config.getOrThrow('CF_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
           credentials: {
             accessKeyId: config.getOrThrow('R2_ACCESS_KEY_ID'),
             secretAccessKey: config.getOrThrow('R2_SECRET_ACCESS_KEY'),
           },
-        }),
+        });
+      },
     },
     R2Service,
   ],

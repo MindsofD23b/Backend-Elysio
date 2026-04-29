@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { UserResponseDto } from './dto/response-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -8,7 +8,8 @@ import { MatchHistory } from '../matchmaking/entities/match-history.entity';
 import * as bcrypt from 'bcrypt';
 import { R2Service } from '../r2/r2.service';
 import { ProfilePicture } from './entities/profile-picture.entity';
-
+import { Interest } from '../interests/entities/interest.entity';
+import { UserInterest } from '../interests/entities/user-interest.entity';
 
 @Injectable()
 export class UsersService {
@@ -16,13 +17,16 @@ export class UsersService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
 
+    @InjectRepository(Interest)
+    private interestRepository: Repository<Interest>,
+
     @InjectRepository(MatchHistory)
     private matchHistoryRepository: Repository<MatchHistory>,
 
     @InjectRepository(ProfilePicture)
     private readonly picRepo: Repository<ProfilePicture>,
     private readonly r2: R2Service,
-  ) { }
+  ) {}
 
   async create(dto: CreateUserDto): Promise<UserResponseDto> {
     const hashedPassword = await bcrypt.hash(dto.password, 12);
@@ -142,6 +146,44 @@ export class UsersService {
     return this.userRepository.findOne({ where: { appleId } });
   }
 
+  async getInterests(userId: string): Promise<Interest[]> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: {
+        userInterests: {
+          interest: true,
+        },
+      },
+    });
+    if (!user) throw new NotFoundException('User not found');
+    return user.userInterests.map((ui) => ui.interest);
+  }
+
+  async updateInterests(
+    userId: string,
+    interestIds: string[],
+  ): Promise<UserInterest[]> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+
+    const interests = await this.interestRepository.findBy({
+      id: In(interestIds),
+    });
+
+    user.userInterests = interests.map((interest) => ({
+      id: interest.id,
+      user: user,
+      interest: interest,
+    })) satisfies UserInterest[];
+
+    await this.userRepository.save(user);
+
+    return user.userInterests.map((ui) => ({
+      id: ui.id,
+      interest: ui.interest,
+    })) as UserInterest[];
+  }
+
   async createAppleUser(data: {
     appleId: string;
     email: string | null;
@@ -182,7 +224,7 @@ export class UsersService {
 
     if (!file?.buffer) {
       console.error(`[uploadProfilePicture] No file or buffer — aborting`);
-      throw new Error("No file received");
+      throw new Error('No file received');
     }
 
     try {
@@ -222,7 +264,10 @@ export class UsersService {
     return { deleted: true };
   }
 
-  async changeSubscription(userId: string, newPlan: 'free' | 'premium' | 'gold') {
+  async changeSubscription(
+    userId: string,
+    newPlan: 'free' | 'premium' | 'gold',
+  ) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
     if (!user) throw new NotFoundException('User not found');
@@ -231,5 +276,4 @@ export class UsersService {
     await this.userRepository.save(user);
     return { subscriptionStatus: user.subscriptionStatus };
   }
-
 }

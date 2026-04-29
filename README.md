@@ -1,18 +1,13 @@
 # Backend-Elysio
 
-
 [![codecov](https://codecov.io/gh/MindsofD23b/Backend-Elysio/graph/badge.svg?token=QYQ3CUEARG)](https://codecov.io/gh/MindsofD23b/Backend-Elysio)
-
-
 
 ## Related Repositories
 
-| Repo | Description |
-|------|-------------|
-| **[Frontend](https://github.com/MindsofD23b/Frontend-Elysio)** | React + Tailwind frontend for the Elysio dashboard, user interface, and server management UI. |
-| **[Backend](https://github.com/MindsofD23b/Backend-Elysio)** | API, server logic, authentication, billing integrations, monitoring endpoints, and infrastructure connections. |
-
-
+| Repo                                                           | Description                                                                                                    |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **[Frontend](https://github.com/MindsofD23b/Frontend-Elysio)** | React + Tailwind frontend for the Elysio dashboard, user interface, and server management UI.                  |
+| **[Backend](https://github.com/MindsofD23b/Backend-Elysio)**   | API, server logic, authentication, billing integrations, monitoring endpoints, and infrastructure connections. |
 
 ---
 
@@ -32,5 +27,3 @@
 </p>
 
 ---
-
-

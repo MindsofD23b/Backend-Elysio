@@ -37,7 +37,7 @@ export class AuthService {
 
     @InjectRepository(Interest)
     private interestRepo: Repository<Interest>,
-  ) { }
+  ) {}
 
   async checkEmail(email: string) {
     const exists = await this.usersService
@@ -110,7 +110,9 @@ export class AuthService {
   }
 
   async forgotPassword(dto: ForgotPasswordDto) {
-    const user = await this.usersService.findByEmail(dto.email).catch(() => null);
+    const user = await this.usersService
+      .findByEmail(dto.email)
+      .catch(() => null);
 
     if (user) {
       const token = await this.passwordResetService.createToken(dto.email);
@@ -177,7 +179,6 @@ export class AuthService {
   async validateJwtUser(userId: string) {
     return this.usersService.findById(userId);
   }
-
 
   async appleLogin(dto: AppleLoginDto) {
     let payload: any;

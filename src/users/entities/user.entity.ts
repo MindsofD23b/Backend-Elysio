@@ -113,6 +113,4 @@ export class User {
 
   @OneToMany(() => MatchHistory, () => undefined)
   matchesAsUserB: MatchHistory[];
-
-
 }
