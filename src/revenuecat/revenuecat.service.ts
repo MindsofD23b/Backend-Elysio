@@ -64,18 +64,28 @@ export class RevenueCatService {
     this.logger.log(`Event ${type} requires no immediate subscription change`);
   }
 
-  private resolvePlan(entitlementIds: string[] | null): 'free' | 'premium' | 'gold' {
+  private resolvePlan(
+    entitlementIds: string[] | null,
+  ): 'free' | 'premium' | 'gold' {
     if (!entitlementIds || entitlementIds.length === 0) return 'free';
     if (entitlementIds.includes('gold')) return 'gold';
     if (entitlementIds.includes('premium')) return 'premium';
     return 'free';
   }
 
-  private async setSubscription(userId: string, plan: 'free' | 'premium' | 'gold') {
-    const result = await this.userRepository.update({ id: userId }, { subscriptionStatus: plan });
+  private async setSubscription(
+    userId: string,
+    plan: 'free' | 'premium' | 'gold',
+  ) {
+    const result = await this.userRepository.update(
+      { id: userId },
+      { subscriptionStatus: plan },
+    );
 
     if (result.affected === 0) {
-      this.logger.warn(`User ${userId} not found when applying subscription ${plan}`);
+      this.logger.warn(
+        `User ${userId} not found when applying subscription ${plan}`,
+      );
     } else {
       this.logger.log(`User ${userId} subscription set to ${plan}`);
     }

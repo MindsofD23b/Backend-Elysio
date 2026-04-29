@@ -10,7 +10,7 @@ import { AppleLoginDto } from './dto/apple-login.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Post('check-email')
   checkEmail(@Body() dto: StartRegisterDto) {

@@ -33,7 +33,7 @@ export const AppDataSource = new DataSource({
     ChatMessageKey,
     UserBlock,
     MatchHistory,
-    ProfilePicture
+    ProfilePicture,
   ],
 
   migrations: ['src/migrations/*.ts'],

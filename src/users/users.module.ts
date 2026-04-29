@@ -7,11 +7,12 @@ import { MatchHistory } from '../matchmaking/entities/match-history.entity';
 import { ProfilePicture } from './entities/profile-picture.entity';
 import { ConfigModule } from '@nestjs/config';
 import { R2Module } from '../r2/r2.module';
+import { Interest } from '../interests/entities/interest.entity';
 
 @Module({
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([User, MatchHistory, ProfilePicture]),
+    TypeOrmModule.forFeature([User, Interest, MatchHistory, ProfilePicture]),
     R2Module,
   ],
   controllers: [UsersController],

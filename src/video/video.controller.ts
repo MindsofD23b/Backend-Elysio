@@ -16,6 +16,7 @@ import type {
   RtpCapabilities,
 } from 'mediasoup/types';
 import { VideoGateway } from './video.gateway';
+import { TurnService } from '../turn/turn.service';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('video')
@@ -23,7 +24,13 @@ export class VideoController {
   constructor(
     private readonly mediaService: MediaService,
     private readonly videoGateway: VideoGateway,
+    private readonly turnService: TurnService,
   ) {}
+
+  @Get('turn-credentials')
+  getTurnCredentials() {
+    return { iceServers: this.turnService.getIceServers() };
+  }
 
   @Post('room/:roomId/join')
   async joinRoom(
@@ -34,7 +41,10 @@ export class VideoController {
     await this.mediaService.joinRoom(roomId, peerId);
 
     const rtpCapabilities = this.mediaService.getRtpCapabilities(roomId);
-    return { rtpCapabilities };
+    return {
+      rtpCapabilities,
+      iceServers: this.turnService.getIceServers(),
+    };
   }
 
   @Delete('room/:roomId/leave')

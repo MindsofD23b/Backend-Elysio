@@ -1,9 +1,24 @@
-import { Put, UseGuards, Request, Controller, Body, Get, Param, Post, BadRequestException, UseInterceptors, UploadedFile, ParseUUIDPipe, Delete } from '@nestjs/common';
+import {
+  Put,
+  UseGuards,
+  Request,
+  Controller,
+  Body,
+  Get,
+  Param,
+  Post,
+  BadRequestException,
+  UseInterceptors,
+  UploadedFile,
+  ParseUUIDPipe,
+  Delete,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdatePublicKeyDto } from './dto/update-public-key.dto';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import { UpdateInterestsDto } from '../auth/dto/update-interests.dto';
 
 const imageFilter = (
   _req: Express.Request,
@@ -11,19 +26,34 @@ const imageFilter = (
   cb: (err: Error | null, accept: boolean) => void,
 ) => {
   if (!file.mimetype.match(/^image\/(jpeg|png|webp)$/)) {
-    return cb(new BadRequestException('Only JPEG, PNG, or WebP allowed'), false);
+    return cb(
+      new BadRequestException('Only JPEG, PNG, or WebP allowed'),
+      false,
+    );
   }
   cb(null, true);
 };
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
   @UseGuards(AuthGuard('jwt'))
   getMe(@Request() req) {
     return this.usersService.getProfile(req.user.sub);
+  }
+
+  @Get('me/interests')
+  @UseGuards(AuthGuard('jwt'))
+  getInterests(@Request() req) {
+    return this.usersService.getInterests(req.user.sub);
+  }
+
+  @Put('me/interests')
+  @UseGuards(AuthGuard('jwt'))
+  updateInterests(@Request() req, @Body() dto: UpdateInterestsDto) {
+    return this.usersService.updateInterests(req.user.sub, dto.interestIds);
   }
 
   @Put('me/public-key')
@@ -71,5 +101,4 @@ export class UsersController {
   ) {
     return this.usersService.deleteProfilePicture(userId, photoId);
   }
-
 }
