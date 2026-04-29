@@ -4,10 +4,11 @@ import { MediaService } from './media.service';
 import { VideoController } from './video.controller';
 import { VideoService } from './video.service';
 import { VideoGateway } from './video.gateway';
+import { TurnService } from '../turn/turn.service';
 
 @Module({
   imports: [AuthModule],
   controllers: [VideoController],
-  providers: [MediaService, VideoService, VideoGateway],
+  providers: [MediaService, VideoService, VideoGateway, TurnService],
 })
 export class VideoModule {}
