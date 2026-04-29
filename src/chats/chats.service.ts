@@ -184,7 +184,9 @@ export class ChatService {
       .take(safeLimit + 1);
 
     if (before) {
-      qb.andWhere('msg.createdAt < :before', { before: new Date(before) });
+      qb.andWhere('msg.createdAt < :before', {
+        before: new Date(before),
+      });
     }
 
     const messages = await qb.getMany();
@@ -253,7 +255,9 @@ export class ChatService {
         },
       );
 
-      const room = await this.roomRepo.findOne({ where: { id: roomId } });
+      const room = await this.roomRepo.findOne({
+        where: { id: roomId },
+      });
 
       if (room) {
         const recipientId =

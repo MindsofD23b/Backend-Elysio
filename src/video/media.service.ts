@@ -319,7 +319,11 @@ export class MediaService implements OnModuleInit {
     room.peers.forEach((peer, peerId) => {
       if (peerId === excludePeerId) return;
       peer.producers.forEach((producer) => {
-        result.push({ peerId, producerId: producer.id, kind: producer.kind });
+        result.push({
+          peerId,
+          producerId: producer.id,
+          kind: producer.kind,
+        });
       });
     });
 

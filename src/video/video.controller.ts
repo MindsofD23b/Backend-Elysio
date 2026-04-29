@@ -41,7 +41,10 @@ export class VideoController {
     await this.mediaService.joinRoom(roomId, peerId);
 
     const rtpCapabilities = this.mediaService.getRtpCapabilities(roomId);
-    return { rtpCapabilities, iceServers: this.turnService.getIceServers() };
+    return {
+      rtpCapabilities,
+      iceServers: this.turnService.getIceServers(),
+    };
   }
 
   @Delete('room/:roomId/leave')

@@ -163,7 +163,9 @@ export class UsersService {
     userId: string,
     interestIds: string[],
   ): Promise<UserInterest[]> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
     if (!user) throw new NotFoundException('User not found');
 
     const interests = await this.interestRepository.findBy({
@@ -231,7 +233,10 @@ export class UsersService {
       const key = await this.r2.uploadProfilePicture(userId, file);
       console.log(`[uploadProfilePicture] R2 upload succeeded, key: ${key}`);
 
-      const pic = this.picRepo.create({ r2Key: key, user: { id: userId } });
+      const pic = this.picRepo.create({
+        r2Key: key,
+        user: { id: userId },
+      });
       await this.picRepo.save(pic);
       console.log(`[uploadProfilePicture] Saved to DB, pic.id: ${pic.id}`);
 
@@ -268,7 +273,9 @@ export class UsersService {
     userId: string,
     newPlan: 'free' | 'premium' | 'gold',
   ) {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
 
     if (!user) throw new NotFoundException('User not found');
 
