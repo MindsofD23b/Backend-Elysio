@@ -36,7 +36,7 @@ export const AppDataSource = new DataSource({
     ProfilePicture,
   ],
 
-  migrations: ['src/migrations/*.ts'],
+  migrations: ['src/database/migrations/*.ts'],
 
   synchronize: false,
   logging: false,
