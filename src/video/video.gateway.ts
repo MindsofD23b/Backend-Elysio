@@ -78,6 +78,7 @@ export class VideoGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (peerId && roomId) {
       this.mediaService.leaveRoom(roomId, peerId);
       this.roomLikedBy.delete(roomId);
+      client.to(roomId).emit('peer_left', { peerId });
       this.logger.log(`peer ${peerId} left socket room ${roomId}`);
     }
   }

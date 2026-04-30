@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 
@@ -24,6 +24,14 @@ export class MatchmakingController {
   @Post('deactivate')
   async deactivateCall(@Req() req: AuthenticatedRequest) {
     return this.matchmakingService.deactivateCall(req.user.sub);
+  }
+
+  @Post('decline')
+  async declineMatch(
+    @Req() req: AuthenticatedRequest,
+    @Body() body: { roomId: string },
+  ) {
+    return this.matchmakingService.declineMatch(req.user.sub, body.roomId);
   }
 
   @Get('me')

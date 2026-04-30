@@ -101,6 +101,13 @@ export class MatchmakingService {
     return this.createMatch(ticket, match);
   }
 
+  async declineMatch(userId: string, roomId: string): Promise<{ success: true }> {
+    await this.matchHistoryRepository.update({ roomId }, { outcome: 'declined' });
+    this.stateStore.set(userId, MatchmakingState.IDLE);
+    this.activeTickets.delete(userId);
+    return { success: true };
+  }
+
   async deactivateCall(userId: string): Promise<{ success: true }> {
     const user = await this.usersRepository.findOne({
       where: { id: userId },
@@ -208,6 +215,15 @@ export class MatchmakingService {
       );
 
       if (blocked) {
+        continue;
+      }
+
+      const declined = await this.hasDeclinedMatch(
+        currentTicket.userId,
+        candidate.userId,
+      );
+
+      if (declined) {
         continue;
       }
 
@@ -372,6 +388,16 @@ export class MatchmakingService {
     }
 
     return true;
+  }
+
+  private async hasDeclinedMatch(userIdA: string, userIdB: string): Promise<boolean> {
+    const declined = await this.matchHistoryRepository.findOne({
+      where: [
+        { userA: { id: userIdA }, userB: { id: userIdB }, outcome: 'declined' },
+        { userA: { id: userIdB }, userB: { id: userIdA }, outcome: 'declined' },
+      ],
+    });
+    return Boolean(declined);
   }
 
   private async isBlocked(userIdA: string, userIdB: string): Promise<boolean> {
