@@ -152,16 +152,11 @@ export class UsersService {
   }
 
   async getInterests(userId: string): Promise<Interest[]> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations: {
-        userInterests: {
-          interest: true,
-        },
-      },
+    const records = await this.userInterestRepo.find({
+      where: { user: { id: userId } },
+      relations: { interest: true },
     });
-    if (!user) throw new NotFoundException('User not found');
-    return user.userInterests.map((ui) => ui.interest);
+    return records.map((r) => r.interest);
   }
 
   async updateInterests(
