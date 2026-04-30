@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, QueryFailedError, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { UserResponseDto } from './dto/response-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -310,8 +310,22 @@ export class UsersService {
     if (!user) throw new NotFoundException('User not found');
 
     Object.assign(user, dto);
-    const saved = await this.userRepository.save(user);
-    return this.mapToResponseDto(saved);
+    try {
+      const saved = await this.userRepository.save(user);
+      return this.mapToResponseDto(saved);
+    } catch (err) {
+      if (err instanceof QueryFailedError && (err as any).code === '23505') {
+        const detail: string = (err as any).detail ?? '';
+        if (detail.includes('phoneNumber')) {
+          throw new BadRequestException('This phone number is already in use by another account.');
+        }
+        if (detail.includes('email')) {
+          throw new BadRequestException('This email is already in use by another account.');
+        }
+        throw new BadRequestException('A unique constraint was violated.');
+      }
+      throw err;
+    }
   }
 
   async replacePrimaryPhoto(
