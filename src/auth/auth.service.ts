@@ -20,6 +20,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { User } from '../users/entities/user.entity';
 import { AppleLoginDto } from './dto/apple-login.dto';
+import { GoogleLoginDto } from './dto/google-login.dto';
 import * as appleSignin from 'apple-signin-auth';
 
 @Injectable()
@@ -186,7 +187,7 @@ export class AuthService {
 
     try {
       payload = await appleSignin.verifyIdToken(dto.identityToken, {
-        audience: process.env.APPLE_BUNDLE_ID, // e.g. 'com.yourapp.id'
+        audience: process.env.APPLE_BUNDLE_ID,
         ignoreExpiration: false,
       });
     } catch {
@@ -199,17 +200,77 @@ export class AuthService {
     let user = await this.usersService.findByAppleId(appleUserId);
 
     if (!user) {
-      // Parse fullName if provided (only sent on first sign-in)
-      const [firstName, ...rest] = (dto.fullName ?? '').split(' ');
-      const lastName = rest.join(' ') || null;
-
       user = await this.usersService.createAppleUser({
         appleId: appleUserId,
         email,
-        firstName: firstName || null,
-        lastName: lastName || null,
-        nickname: dto.nickname || null,
+        firstName: dto.firstName || null,
+        lastName: dto.lastName || null,
         realUserStatus: dto.realUserStatus ?? null,
+      });
+    }
+
+    return this.generateToken(user.id);
+  }
+
+  async googleLogin(dto: GoogleLoginDto) {
+    let googleUser: any;
+
+    try {
+      const res = await fetch(
+        `https://oauth2.googleapis.com/tokeninfo?id_token=${dto.idToken}`,
+      );
+      if (!res.ok) throw new Error('Token rejected by Google');
+      googleUser = await res.json();
+    } catch {
+      throw new UnauthorizedException('Invalid Google token');
+    }
+
+    // Validate audience matches one of our registered client IDs
+    const validAudiences = [
+      process.env.GOOGLE_IOS_CLIENT_ID,
+      process.env.GOOGLE_ANDROID_CLIENT_ID,
+      process.env.GOOGLE_WEB_CLIENT_ID,
+    ].filter(Boolean);
+
+    if (validAudiences.length > 0 && !validAudiences.includes(googleUser.aud)) {
+      throw new UnauthorizedException('Invalid Google token audience');
+    }
+
+    const googleId: string = googleUser.sub;
+    const email: string | null = googleUser.email ?? null;
+    const firstName: string | null = googleUser.given_name ?? null;
+    const lastName: string | null = googleUser.family_name ?? null;
+    // locale is e.g. "en", "de", "de-CH" — take just the base language tag
+    const language: string | null = googleUser.locale
+      ? (googleUser.locale as string).split('-')[0]
+      : null;
+    const emailVerified: boolean =
+      googleUser.email_verified === 'true' ||
+      googleUser.email_verified === true;
+
+    let user = await this.usersService.findByGoogleId(googleId);
+
+    if (!user && email) {
+      // Link Google to an existing email-based account if found
+      const existing = await this.usersService.findByEmail(email).catch(() => null);
+      if (existing) {
+        existing.googleId = googleId;
+        if (!existing.emailVerified && emailVerified) {
+          existing.emailVerified = true;
+        }
+        await this.usersService.save(existing);
+        user = existing;
+      }
+    }
+
+    if (!user) {
+      user = await this.usersService.createGoogleUser({
+        googleId,
+        email,
+        firstName,
+        lastName,
+        language,
+        emailVerified,
       });
     }
 

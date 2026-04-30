@@ -151,6 +151,10 @@ export class UsersService {
     return this.userRepository.findOne({ where: { appleId } });
   }
 
+  async findByGoogleId(googleId: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { googleId } });
+  }
+
   async getInterests(userId: string): Promise<Interest[]> {
     const records = await this.userInterestRepo.find({
       where: { user: { id: userId } },
@@ -185,7 +189,6 @@ export class UsersService {
     email: string | null;
     firstName: string | null;
     lastName: string | null;
-    nickname?: string | null;
     realUserStatus?: number | null;
   }): Promise<User> {
     const user = this.userRepository.create({
@@ -200,6 +203,35 @@ export class UsersService {
       gender: '',
       country: '',
       language: '',
+      jobTitle: '',
+      aboutMe: '',
+      acceptedTerms: false,
+      acceptedPrivacyPolicy: false,
+    });
+
+    return this.userRepository.save(user);
+  }
+
+  async createGoogleUser(data: {
+    googleId: string;
+    email: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    language: string | null;
+    emailVerified: boolean;
+  }): Promise<User> {
+    const user = this.userRepository.create({
+      googleId: data.googleId,
+      email: data.email,
+      firstName: data.firstName ?? '',
+      lastName: data.lastName ?? '',
+      emailVerified: data.emailVerified,
+      password: null,
+      phonePrefix: null,
+      phoneNumber: null,
+      gender: '',
+      country: '',
+      language: data.language ?? '',
       jobTitle: '',
       aboutMe: '',
       acceptedTerms: false,

@@ -7,6 +7,7 @@ import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AppleLoginDto } from './dto/apple-login.dto';
+import { GoogleLoginDto } from './dto/google-login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -47,5 +48,10 @@ export class AuthController {
   @Post('apple')
   appleLogin(@Body() dto: AppleLoginDto) {
     return this.authService.appleLogin(dto);
+  }
+
+  @Post('google')
+  googleLogin(@Body() dto: GoogleLoginDto) {
+    return this.authService.googleLogin(dto);
   }
 }
