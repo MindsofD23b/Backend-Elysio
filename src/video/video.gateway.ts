@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
 import { MediaService } from './media.service';
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({ cors: { origin: false } })
 export class VideoGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(VideoGateway.name);
 

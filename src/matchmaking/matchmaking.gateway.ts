@@ -16,7 +16,7 @@ type JwtPayload = {
 };
 
 @WebSocketGateway({
-  cors: true,
+  cors: { origin: false },
 })
 export class MatchmakingGateway
   implements OnGatewayConnection, OnGatewayDisconnect

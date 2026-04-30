@@ -2,7 +2,7 @@ import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 
 @WebSocketGateway({
-  cors: true,
+  cors: { origin: false },
 })
 export class AuthGateway {
   @WebSocketServer()
