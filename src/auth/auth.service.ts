@@ -69,6 +69,7 @@ export class AuthService {
     return {
       message: 'Verification email sent',
       userId: user.id,
+      token: this.generateToken(user.id).token,
     };
   }
 
