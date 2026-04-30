@@ -3,6 +3,8 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -70,5 +72,21 @@ export class VideoGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   notifyNewProducer(roomId: string, producerId: string, peerId: string) {
     this.server.to(roomId).emit('new-producer', { producerId, peerId });
+  }
+
+  @SubscribeMessage('send_like')
+  handleSendLike(@ConnectedSocket() client: Socket) {
+    const { roomId, peerId } = client.data as { roomId?: string; peerId?: string };
+    if (roomId && peerId) {
+      client.to(roomId).emit('receive_like', { fromPeerId: peerId });
+      this.logger.log(`peer ${peerId} sent a like in room ${roomId}`);
+    }
+  }
+
+  @SubscribeMessage('send_like_back')
+  handleSendLikeBack(@ConnectedSocket() client: Socket) {
+    const { roomId, peerId } = client.data as { roomId?: string; peerId?: string };
+    console.log(`[LikeBack] peer ${peerId} liked back in room ${roomId}`);
+    this.logger.log(`peer ${peerId} liked back in room ${roomId}`);
   }
 }
