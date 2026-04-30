@@ -4,6 +4,7 @@ import { In, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { UserResponseDto } from './dto/response-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { PatchProfileDto } from './dto/patch-profile.dto';
 import { MatchHistory } from '../matchmaking/entities/match-history.entity';
 import * as bcrypt from 'bcrypt';
 import { R2Service } from '../r2/r2.service';
@@ -267,6 +268,46 @@ export class UsersService {
     await this.picRepo.remove(pic);
 
     return { deleted: true };
+  }
+
+  async updateProfile(userId: string, dto: PatchProfileDto): Promise<UserResponseDto> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+
+    Object.assign(user, dto);
+    const saved = await this.userRepository.save(user);
+    return this.mapToResponseDto(saved);
+  }
+
+  async replacePrimaryPhoto(
+    userId: string,
+    file: Express.Multer.File,
+  ): Promise<{ id: string; key: string }> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['profilePictures'],
+    });
+    if (!user) throw new NotFoundException('User not found');
+
+    const existing =
+      user.profilePictures?.find((p) => p.isPrimary) ??
+      user.profilePictures?.[0] ??
+      null;
+
+    if (existing) {
+      await this.r2.deleteFile(existing.r2Key);
+      await this.picRepo.remove(existing);
+    }
+
+    const key = await this.r2.uploadProfilePicture(userId, file);
+    const pic = this.picRepo.create({
+      r2Key: key,
+      isPrimary: true,
+      user: { id: userId },
+    });
+    await this.picRepo.save(pic);
+
+    return { id: pic.id, key };
   }
 
   async changeSubscription(

@@ -1,5 +1,6 @@
 import {
   Put,
+  Patch,
   UseGuards,
   Request,
   Controller,
@@ -15,6 +16,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdatePublicKeyDto } from './dto/update-public-key.dto';
+import { PatchProfileDto } from './dto/patch-profile.dto';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
@@ -60,6 +62,28 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   updatePublicKey(@Request() req, @Body() dto: UpdatePublicKeyDto) {
     return this.usersService.updatePublicKey(req.user.sub, dto.publicKey);
+  }
+
+  @Patch('me')
+  @UseGuards(AuthGuard('jwt'))
+  updateProfile(@Request() req, @Body() dto: PatchProfileDto) {
+    return this.usersService.updateProfile(req.user.sub, dto);
+  }
+
+  @Put('me/photo')
+  @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: 5 * 1024 * 1024 },
+      fileFilter: imageFilter,
+    }),
+  )
+  async replacePhoto(
+    @Request() req,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.usersService.replacePrimaryPhoto(req.user.sub, file);
   }
 
   @Get('calls-left')
