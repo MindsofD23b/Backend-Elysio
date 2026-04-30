@@ -6,6 +6,7 @@ import {
   IsOptional,
   MinLength,
   Matches,
+  IsNumber,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -53,4 +54,28 @@ export class CreateUserDto {
 
   @IsBoolean()
   acceptedPrivacyPolicy: boolean;
+
+  @IsOptional()
+  @IsString()
+  interestedIn?: string;
+
+  @IsOptional()
+  @IsNumber()
+  minPreferredAge?: number;
+
+  @IsOptional()
+  @IsNumber()
+  maxPreferredAge?: number;
+
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @IsOptional()
+  @IsNumber()
+  latitude?: number;
+
+  @IsOptional()
+  @IsNumber()
+  longitude?: number;
 }

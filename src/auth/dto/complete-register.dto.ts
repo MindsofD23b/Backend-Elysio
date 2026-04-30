@@ -5,6 +5,8 @@ import {
   IsDateString,
   MinLength,
   IsArray,
+  IsOptional,
+  IsNumber,
 } from 'class-validator';
 
 export class CompleteRegisterDto {
@@ -53,4 +55,28 @@ export class CompleteRegisterDto {
 
   @IsArray()
   interests: string[];
+
+  @IsOptional()
+  @IsString()
+  interestedIn?: string;
+
+  @IsOptional()
+  @IsNumber()
+  minPreferredAge?: number;
+
+  @IsOptional()
+  @IsNumber()
+  maxPreferredAge?: number;
+
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @IsOptional()
+  @IsNumber()
+  latitude?: number;
+
+  @IsOptional()
+  @IsNumber()
+  longitude?: number;
 }
