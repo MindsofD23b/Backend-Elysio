@@ -26,6 +26,10 @@ export class UsersService {
 
     @InjectRepository(ProfilePicture)
     private readonly picRepo: Repository<ProfilePicture>,
+
+    @InjectRepository(UserInterest)
+    private readonly userInterestRepo: Repository<UserInterest>,
+
     private readonly r2: R2Service,
   ) {}
 
@@ -163,28 +167,22 @@ export class UsersService {
   async updateInterests(
     userId: string,
     interestIds: string[],
-  ): Promise<UserInterest[]> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    });
-    if (!user) throw new NotFoundException('User not found');
+  ): Promise<Interest[]> {
+    await this.userInterestRepo.delete({ user: { id: userId } });
 
-    const interests = await this.interestRepository.findBy({
-      id: In(interestIds),
-    });
+    if (interestIds.length > 0) {
+      const interests = await this.interestRepository.findBy({
+        id: In(interestIds),
+      });
 
-    user.userInterests = interests.map((interest) => ({
-      id: interest.id,
-      user: user,
-      interest: interest,
-    })) satisfies UserInterest[];
+      const records = interests.map((interest) =>
+        this.userInterestRepo.create({ user: { id: userId }, interest }),
+      );
 
-    await this.userRepository.save(user);
+      await this.userInterestRepo.save(records);
+    }
 
-    return user.userInterests.map((ui) => ({
-      id: ui.id,
-      interest: ui.interest,
-    })) as UserInterest[];
+    return this.getInterests(userId);
   }
 
   async createAppleUser(data: {
