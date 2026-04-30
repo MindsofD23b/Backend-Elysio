@@ -2,6 +2,10 @@ import {
   IsOptional,
   IsString,
   IsDateString,
+  IsBoolean,
+  IsInt,
+  Min,
+  Max,
 } from 'class-validator';
 
 export class PatchProfileDto {
@@ -15,7 +19,29 @@ export class PatchProfileDto {
 
   @IsOptional()
   @IsString()
+  gender?: string;
+
+  @IsOptional()
+  @IsString()
+  interestedIn?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(18)
+  minPreferredAge?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Max(99)
+  maxPreferredAge?: number;
+
+  @IsOptional()
+  @IsString()
   country?: string;
+
+  @IsOptional()
+  @IsString()
+  language?: string;
 
   @IsOptional()
   @IsDateString()
@@ -35,5 +61,17 @@ export class PatchProfileDto {
 
   @IsOptional()
   @IsString()
-  language?: string;
+  phonePrefix?: string;
+
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  acceptedTerms?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  acceptedPrivacyPolicy?: boolean;
 }

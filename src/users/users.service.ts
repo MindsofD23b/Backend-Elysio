@@ -55,6 +55,7 @@ export class UsersService {
       id: user.id,
       email: user.email ?? null,
       phoneNumber: user.phoneNumber ?? null,
+      phonePrefix: user.phonePrefix ?? null,
       emailVerified: user.emailVerified,
       gender: user.gender,
       firstName: user.firstName,
@@ -64,6 +65,13 @@ export class UsersService {
       language: user.language,
       jobTitle: user.jobTitle,
       aboutMe: user.aboutMe,
+      city: user.city ?? null,
+      interestedIn: user.interestedIn ?? null,
+      minPreferredAge: user.minPreferredAge ?? null,
+      maxPreferredAge: user.maxPreferredAge ?? null,
+      acceptedTerms: user.acceptedTerms,
+      acceptedPrivacyPolicy: user.acceptedPrivacyPolicy,
+      subscriptionStatus: user.subscriptionStatus,
       createdAt: user.createdAt,
     };
   }
