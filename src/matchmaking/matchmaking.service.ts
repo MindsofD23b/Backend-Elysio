@@ -63,14 +63,19 @@ export class MatchmakingService {
       throw new BadRequestException('User is already waiting');
     }
 
-    if (
-      currentState === MatchmakingState.RESERVED ||
-      currentState === MatchmakingState.CONNECTING ||
-      currentState === MatchmakingState.IN_ROOM
-    ) {
+    if (currentState === MatchmakingState.RESERVED) {
       throw new BadRequestException(
         `User cannot activate call while in state "${currentState}"`,
       );
+    }
+
+    if (
+      currentState === MatchmakingState.CONNECTING ||
+      currentState === MatchmakingState.IN_ROOM
+    ) {
+      // Stale state from a previous call — reset and re-enter queue
+      this.activeTickets.delete(user.id);
+      this.stateStore.set(user.id, MatchmakingState.IDLE);
     }
 
     const baseTicket = this.buildQueueTicketFromUser(user);
