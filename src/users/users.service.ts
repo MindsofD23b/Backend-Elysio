@@ -187,16 +187,18 @@ export class UsersService {
   async createAppleUser(data: {
     appleId: string;
     email: string | null;
+    emailVerified: boolean;
     firstName: string | null;
     lastName: string | null;
+    nickname?: string | null;
     realUserStatus?: number | null;
   }): Promise<User> {
     const user = this.userRepository.create({
       appleId: data.appleId,
       email: data.email,
+      emailVerified: data.emailVerified,
       firstName: data.firstName ?? '',
       lastName: data.lastName ?? '',
-      emailVerified: true,
       password: null,
       phonePrefix: null,
       phoneNumber: null,

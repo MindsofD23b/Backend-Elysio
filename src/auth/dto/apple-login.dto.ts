@@ -6,19 +6,31 @@ export class AppleLoginDto {
 
   @IsOptional()
   @IsString()
-  authorizationCode?: string;
-
-  @IsOptional()
-  @IsString()
   email?: string;
 
   @IsOptional()
   @IsString()
-  firstName?: string;
+  namePrefix?: string;
 
   @IsOptional()
   @IsString()
-  lastName?: string;
+  givenName?: string;
+
+  @IsOptional()
+  @IsString()
+  middleName?: string;
+
+  @IsOptional()
+  @IsString()
+  familyName?: string;
+
+  @IsOptional()
+  @IsString()
+  nameSuffix?: string;
+
+  @IsOptional()
+  @IsString()
+  nickname?: string;
 
   @IsOptional()
   @IsNumber()

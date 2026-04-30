@@ -195,7 +195,18 @@ export class AuthService {
     }
 
     const appleUserId: string = payload.sub;
+    // JWT email takes precedence; credential email is the fallback for first sign-in
     const email: string | null = payload.email ?? dto.email ?? null;
+    const emailVerified: boolean =
+      payload.email_verified === true || payload.email_verified === 'true';
+
+    // Combine all name parts Apple provides (only populated on first sign-in)
+    const firstName =
+      [dto.namePrefix, dto.givenName, dto.middleName]
+        .filter(Boolean)
+        .join(' ') || null;
+    const lastName =
+      [dto.familyName, dto.nameSuffix].filter(Boolean).join(' ') || null;
 
     let user = await this.usersService.findByAppleId(appleUserId);
 
@@ -203,8 +214,10 @@ export class AuthService {
       user = await this.usersService.createAppleUser({
         appleId: appleUserId,
         email,
-        firstName: dto.firstName || null,
-        lastName: dto.lastName || null,
+        emailVerified,
+        firstName,
+        lastName,
+        nickname: dto.nickname || null,
         realUserStatus: dto.realUserStatus ?? null,
       });
     }
