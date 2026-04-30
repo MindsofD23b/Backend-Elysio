@@ -34,6 +34,7 @@ export class MatchmakingGateway
 
       if (!token) {
         this.logger.warn('Socket connection rejected: missing token');
+        client.emit('auth_error', { reason: 'missing_token' });
         client.disconnect();
         return;
       }
@@ -43,6 +44,7 @@ export class MatchmakingGateway
 
       if (!userId) {
         this.logger.warn('Socket connection rejected: missing userId');
+        client.emit('auth_error', { reason: 'missing_userId' });
         client.disconnect();
         return;
       }
@@ -58,6 +60,7 @@ export class MatchmakingGateway
         'Error occurred while handling socket connection:',
         error,
       );
+      client.emit('auth_error', { reason: error instanceof Error ? error.message : String(error) });
       client.disconnect();
     }
   }

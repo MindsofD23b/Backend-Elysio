@@ -28,14 +28,16 @@ export class VideoGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if (!token) {
       this.logger.warn('Video socket rejected: missing token');
+      client.emit('auth_error', { reason: 'video_missing_token' });
       client.disconnect();
       return;
     }
 
     try {
       this.jwtService.verify(token);
-    } catch {
+    } catch (err) {
       this.logger.warn('Video socket rejected: invalid token');
+      client.emit('auth_error', { reason: 'video_invalid_token', detail: err instanceof Error ? err.message : String(err) });
       client.disconnect();
       return;
     }
