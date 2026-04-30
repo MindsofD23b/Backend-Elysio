@@ -129,6 +129,19 @@ export class MatchmakingService {
     };
   }
 
+  async getMyRoomId(userId: string): Promise<{ roomId: string | null }> {
+    const match = await this.matchHistoryRepository.findOne({
+      where: [
+        { userA: { id: userId } },
+        { userB: { id: userId } },
+      ],
+      relations: { userA: true, userB: true },
+      order: { createdAt: 'DESC' },
+    });
+
+    return { roomId: match?.roomId ?? null };
+  }
+
   buildQueueTicketFromUser(user: User): QueueTicket {
     const now = new Date().toISOString();
 

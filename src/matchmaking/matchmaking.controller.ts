@@ -30,4 +30,9 @@ export class MatchmakingController {
   getMyQueueStatus(@Req() req: AuthenticatedRequest) {
     return this.matchmakingService.getMyQueueStatus(req.user.sub);
   }
+
+  @Get('room')
+  getMyRoomId(@Req() req: AuthenticatedRequest) {
+    return this.matchmakingService.getMyRoomId(req.user.sub);
+  }
 }

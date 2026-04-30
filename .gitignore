@@ -26,3 +26,8 @@ lerna-debug.log*
 # temp directory
 .temp
 .tmp
+
+
+.claude
+claude
+*.claude
