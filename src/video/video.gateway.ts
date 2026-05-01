@@ -5,6 +5,7 @@ import {
   OnGatewayDisconnect,
   SubscribeMessage,
   ConnectedSocket,
+  MessageBody,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -85,6 +86,23 @@ export class VideoGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   notifyNewProducer(roomId: string, producerId: string, peerId: string) {
     this.server.to(roomId).emit('new-producer', { producerId, peerId });
+  }
+
+  @SubscribeMessage('send_reaction')
+  handleSendReaction(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { emoji: string },
+  ) {
+    const { roomId, peerId } = client.data as {
+      roomId?: string;
+      peerId?: string;
+    };
+    if (!roomId || !peerId || !data?.emoji) return;
+    this.server
+      .to(roomId)
+      .except(client.id)
+      .emit('receive_reaction', { emoji: data.emoji, fromPeerId: peerId });
+    this.logger.log(`peer ${peerId} reacted with ${data.emoji} in room ${roomId}`);
   }
 
   @SubscribeMessage('send_like')
