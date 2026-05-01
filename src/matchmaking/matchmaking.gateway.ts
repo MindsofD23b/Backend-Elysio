@@ -60,7 +60,9 @@ export class MatchmakingGateway
         'Error occurred while handling socket connection:',
         error,
       );
-      client.emit('auth_error', { reason: error instanceof Error ? error.message : String(error) });
+      client.emit('auth_error', {
+        reason: error instanceof Error ? error.message : String(error),
+      });
       client.disconnect();
     }
   }

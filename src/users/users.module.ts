@@ -13,7 +13,13 @@ import { UserInterest } from '../interests/entities/user-interest.entity';
 @Module({
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([User, Interest, UserInterest, MatchHistory, ProfilePicture]),
+    TypeOrmModule.forFeature([
+      User,
+      Interest,
+      UserInterest,
+      MatchHistory,
+      ProfilePicture,
+    ]),
     R2Module,
   ],
   controllers: [UsersController],
