@@ -11,8 +11,8 @@ export class AnalyticsService {
   ) {}
 
   async getUsersAnalytics(userId: string) {
-    let MatchTime = 0;
-    let count = 0;
+    // let MatchTime = 0;
+    // let count = 0;
 
     const matches = await this.matchHistoryRepository.find({
       where: [{ userA: { id: userId } }, { userB: { id: userId } }],
@@ -21,13 +21,13 @@ export class AnalyticsService {
 
     if (!matches) throw new NotFoundException('No match found');
 
-    matches.forEach((match: MatchHistory) => {
-      count++;
-      MatchTime += Number(match.matchTime);
-    });
+    // matches.forEach((match: MatchHistory) => {
+    //   count++;
+    //   MatchTime += Number(match.matchTime);
+    // });
 
-    const avgTime = Math.round((MatchTime / count / 1000) * 100) / 100;
+    // const avgTime = Math.round((MatchTime / count / 1000) * 100) / 100;
 
-    return { avgMatchTime: avgTime };
+    return matches;
   }
 }
