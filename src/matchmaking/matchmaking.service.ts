@@ -231,6 +231,12 @@ export class MatchmakingService {
         continue;
       }
 
+      // Claim both slots synchronously before any await to prevent race conditions.
+      // If either user was already claimed by a concurrent call, their state will
+      // no longer be WAITING and the check above will have skipped them.
+      this.stateStore.set(currentTicket.userId, MatchmakingState.CONNECTING);
+      this.stateStore.set(candidate.userId, MatchmakingState.CONNECTING);
+
       const ageCompatible = await this.isAgeCompatible(
         currentTicket.userId,
         candidate.userId,
@@ -239,6 +245,8 @@ export class MatchmakingService {
       );
 
       if (!ageCompatible) {
+        this.stateStore.set(currentTicket.userId, MatchmakingState.WAITING);
+        this.stateStore.set(candidate.userId, MatchmakingState.WAITING);
         continue;
       }
 
@@ -248,6 +256,8 @@ export class MatchmakingService {
       );
 
       if (blocked) {
+        this.stateStore.set(currentTicket.userId, MatchmakingState.WAITING);
+        this.stateStore.set(candidate.userId, MatchmakingState.WAITING);
         continue;
       }
 
@@ -257,6 +267,8 @@ export class MatchmakingService {
       );
 
       if (declined) {
+        this.stateStore.set(currentTicket.userId, MatchmakingState.WAITING);
+        this.stateStore.set(candidate.userId, MatchmakingState.WAITING);
         continue;
       }
 
@@ -271,9 +283,6 @@ export class MatchmakingService {
     match: QueueTicket,
   ): Promise<ActivateCallResponse> {
     const roomId = this.createRoomId();
-
-    this.stateStore.set(ticket.userId, MatchmakingState.CONNECTING);
-    this.stateStore.set(match.userId, MatchmakingState.CONNECTING);
 
     this.activeTickets.delete(ticket.userId);
     this.activeTickets.delete(match.userId);
@@ -290,19 +299,23 @@ export class MatchmakingService {
       throw new NotFoundException('Matched user not found');
     }
 
-    const matchTime = Math.floor(
-      Date.now() - new Date(ticket.createdAt).getTime(),
-    );
+    const now = Date.now();
+    const waitTimeA = now - new Date(ticket.createdAt).getTime();
+    const waitTimeB = now - new Date(match.createdAt).getTime();
 
     await this.matchHistoryRepository.save(
       this.matchHistoryRepository.create({
         userA,
         userB,
         roomId,
-        matchTime: matchTime.toString(),
         outcome: 'matched',
       }),
     );
+
+    await Promise.all([
+      this.updateAvgWaitTime(ticket.userId, waitTimeA),
+      this.updateAvgWaitTime(match.userId, waitTimeB),
+    ]);
 
     this.matchmakingGateway.notifyMatchFound(ticket.userId, {
       matchedUserId: match.userId,
@@ -460,6 +473,30 @@ export class MatchmakingService {
     });
 
     return Boolean(block);
+  }
+
+  private async updateAvgWaitTime(
+    userId: string,
+    newWaitTime: number,
+  ): Promise<void> {
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+      select: { id: true, avgWaitTime: true } as never,
+    });
+
+    if (!user) return;
+
+    const matchCount = await this.matchHistoryRepository.count({
+      where: [
+        { userA: { id: userId }, outcome: 'matched' },
+        { userB: { id: userId }, outcome: 'matched' },
+      ],
+    });
+
+    const prevAvg = user.avgWaitTime ?? 0;
+    const newAvg = (prevAvg * (matchCount - 1) + newWaitTime) / matchCount;
+
+    await this.usersRepository.update(userId, { avgWaitTime: newAvg });
   }
 
   private createRoomId(): string {
