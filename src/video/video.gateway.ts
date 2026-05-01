@@ -98,7 +98,7 @@ export class VideoGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!roomId || !peerId || !userId) return;
 
     this.roomLikedBy.set(roomId, userId);
-    client.to(roomId).emit('receive_like', { fromPeerId: peerId });
+    this.server.to(roomId).except(client.id).emit('receive_like', { fromPeerId: peerId });
     this.logger.log(`peer ${peerId} sent a like in room ${roomId}`);
   }
 

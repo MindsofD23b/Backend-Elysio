@@ -186,10 +186,10 @@ export class AuthService {
     let payload: Record<string, unknown>;
 
     try {
-      payload = await appleSignin.verifyIdToken(dto.identityToken, {
+      payload = await (appleSignin.verifyIdToken(dto.identityToken, {
         audience: process.env.APPLE_BUNDLE_ID,
         ignoreExpiration: false,
-      });
+      }) as unknown as Promise<Record<string, unknown>>);
     } catch {
       throw new UnauthorizedException('Invalid Apple token');
     }
