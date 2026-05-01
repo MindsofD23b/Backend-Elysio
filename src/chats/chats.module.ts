@@ -8,14 +8,17 @@ import { ChatController } from './chats.controller';
 import { ChatCryptoService } from './crypto/chat-crypto.service';
 import { AuthModule } from '../auth/auth.module';
 import { User } from '../users/entities/user.entity';
+import { ProfilePicture } from '../users/entities/profile-picture.entity';
 import { ChatGateway } from './chat.gateway';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { R2Module } from '../r2/r2.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ChatRoom, ChatMessage, ChatMessageKey, User]),
+    TypeOrmModule.forFeature([ChatRoom, ChatMessage, ChatMessageKey, User, ProfilePicture]),
     AuthModule,
     NotificationsModule,
+    R2Module,
   ],
   controllers: [ChatController],
   providers: [ChatService, ChatCryptoService, ChatGateway],

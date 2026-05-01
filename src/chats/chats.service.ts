@@ -9,17 +9,17 @@ import { ChatRoom } from './entities/chat-room.entity';
 import { ChatMessage } from './entities/chat-message.entity';
 import { ChatMessageKey } from './entities/chat-message-key.entity';
 import { User } from '../users/entities/user.entity';
+import { ProfilePicture } from '../users/entities/profile-picture.entity';
 import { SendTextMessageDTO } from './dto/send-text-message.dto';
 import { CreateChatRoomDTO } from './dto/create-chat-room.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { ChatGateway } from './chat.gateway';
+import { R2Service } from '../r2/r2.service';
 
 export interface GetMessagesQuery {
   before?: string;
   limit?: number;
 }
-
-const PLACEHOLDER_AVATAR = 'https://i.pravatar.cc/150';
 
 @Injectable()
 export class ChatService {
@@ -39,6 +39,10 @@ export class ChatService {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
 
+    @InjectRepository(ProfilePicture)
+    private readonly picRepo: Repository<ProfilePicture>,
+
+    private readonly r2: R2Service,
     private readonly notificationsService: NotificationsService,
     private readonly chatGateway: ChatGateway,
   ) {}
@@ -133,6 +137,27 @@ export class ChatService {
 
     const userById = new Map(otherUsers.map((u) => [u.id, u]));
 
+    const pics = await this.picRepo.find({
+      where: uniqueOtherIDs.map((id) => ({ user: { id } })),
+      relations: ['user'],
+    });
+
+    const picByUser = new Map<string, ProfilePicture>();
+    for (const pic of pics) {
+      const existing = picByUser.get(pic.user.id);
+      if (!existing || pic.isPrimary) {
+        picByUser.set(pic.user.id, pic);
+      }
+    }
+
+    const avatarByUser = new Map<string, string | null>();
+    await Promise.all(
+      uniqueOtherIDs.map(async (id) => {
+        const pic = picByUser.get(id);
+        avatarByUser.set(id, pic ? await this.r2.getSignedUrl(pic.r2Key) : null);
+      }),
+    );
+
     return rooms.map((room) => {
       const otherUserId =
         room.userAId === currentUserId ? room.userBId : room.userAId;
@@ -159,7 +184,7 @@ export class ChatService {
           ? {
               id: otherUser.id,
               fullName: `${otherUser.firstName} ${otherUser.lastName}`,
-              avatar: `${PLACEHOLDER_AVATAR}?u=${otherUser.id}`,
+              avatar: avatarByUser.get(otherUser.id) ?? null,
             }
           : null,
       };
