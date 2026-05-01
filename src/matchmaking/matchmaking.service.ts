@@ -83,7 +83,9 @@ export class MatchmakingService {
       });
 
       if (existingMatch?.roomId) {
-        this.matchmakingGateway.notifyRoomReady(user.id, { roomId: existingMatch.roomId });
+        this.matchmakingGateway.notifyRoomReady(user.id, {
+          roomId: existingMatch.roomId,
+        });
         const matchedUserId =
           existingMatch.userA.id === user.id
             ? existingMatch.userB.id
@@ -289,7 +291,7 @@ export class MatchmakingService {
     }
 
     const matchTime = Math.floor(
-      (Date.now() - new Date(ticket.createdAt).getTime()) / 1000,
+      Date.now() - new Date(ticket.createdAt).getTime(),
     );
 
     await this.matchHistoryRepository.save(
