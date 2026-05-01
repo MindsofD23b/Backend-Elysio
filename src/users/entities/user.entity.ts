@@ -81,6 +81,9 @@ export class User {
   @Column({ default: false })
   isBlockedFromMatching: boolean;
 
+  @Column({ type: 'float', nullable: true })
+  avgWaitTime: number | null;
+
   @Column({ default: false })
   acceptedTerms: boolean;
 

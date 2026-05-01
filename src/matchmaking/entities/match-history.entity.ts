@@ -26,7 +26,4 @@ export class MatchHistory {
 
   @CreateDateColumn()
   createdAt: Date;
-
-  @Column({ type: 'bigint' })
-  matchTime: string;
 }
