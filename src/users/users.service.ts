@@ -155,6 +155,20 @@ export class UsersService {
     return { ...this.mapToResponseDto(user), photoUrl };
   }
 
+  async getGalleryPhotos(userId: string): Promise<{ id: string; url: string }[]> {
+    const pics = await this.picRepo.find({
+      where: { user: { id: userId }, isPrimary: false },
+      order: { createdAt: 'ASC' },
+    });
+
+    return Promise.all(
+      pics.map(async (pic) => ({
+        id: pic.id,
+        url: await this.r2.getSignedUrl(pic.r2Key),
+      })),
+    );
+  }
+
   async findByAppleId(appleId: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { appleId } });
   }

@@ -92,6 +92,12 @@ export class UsersController {
     return this.usersService.callsLeft(req.user.sub);
   }
 
+  @Get('me/photos')
+  @UseGuards(AuthGuard('jwt'))
+  async getGalleryPhotos(@Request() req) {
+    return this.usersService.getGalleryPhotos(req.user.sub);
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Post(':userId/photos')
   @UseInterceptors(
