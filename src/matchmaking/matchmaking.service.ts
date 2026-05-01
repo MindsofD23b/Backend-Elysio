@@ -87,8 +87,8 @@ export class MatchmakingService {
       updatedAt: new Date().toISOString(),
     };
 
-    this.stateStore.set(user.id, MatchmakingState.WAITING);
     this.activeTickets.set(user.id, ticket);
+    this.stateStore.set(user.id, MatchmakingState.WAITING);
 
     const match = await this.findMatchForUser(ticket);
 
@@ -106,8 +106,14 @@ export class MatchmakingService {
     return this.createMatch(ticket, match);
   }
 
-  async declineMatch(userId: string, roomId: string): Promise<{ success: true }> {
-    await this.matchHistoryRepository.update({ roomId }, { outcome: 'declined' });
+  async declineMatch(
+    userId: string,
+    roomId: string,
+  ): Promise<{ success: true }> {
+    await this.matchHistoryRepository.update(
+      { roomId },
+      { outcome: 'declined' },
+    );
     this.stateStore.set(userId, MatchmakingState.IDLE);
     this.activeTickets.delete(userId);
     return { success: true };
@@ -143,10 +149,7 @@ export class MatchmakingService {
 
   async getMyRoomId(userId: string): Promise<{ roomId: string | null }> {
     const match = await this.matchHistoryRepository.findOne({
-      where: [
-        { userA: { id: userId } },
-        { userB: { id: userId } },
-      ],
+      where: [{ userA: { id: userId } }, { userB: { id: userId } }],
       relations: { userA: true, userB: true },
       order: { createdAt: 'DESC' },
     });
@@ -262,11 +265,16 @@ export class MatchmakingService {
       throw new NotFoundException('Matched user not found');
     }
 
+    const matchTime = Math.floor(
+      (Date.now() - new Date(ticket.createdAt).getTime()) / 1000,
+    );
+
     await this.matchHistoryRepository.save(
       this.matchHistoryRepository.create({
         userA,
         userB,
         roomId,
+        matchTime: matchTime.toString(),
         outcome: 'matched',
       }),
     );
@@ -395,7 +403,10 @@ export class MatchmakingService {
     return true;
   }
 
-  private async hasDeclinedMatch(userIdA: string, userIdB: string): Promise<boolean> {
+  private async hasDeclinedMatch(
+    userIdA: string,
+    userIdB: string,
+  ): Promise<boolean> {
     const declined = await this.matchHistoryRepository.findOne({
       where: [
         { userA: { id: userIdA }, userB: { id: userIdB }, outcome: 'declined' },

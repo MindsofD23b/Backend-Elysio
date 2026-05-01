@@ -14,6 +14,7 @@ import { ChatModule } from './chats/chats.module';
 import { MatchmakingModule } from './matchmaking/matchmaking.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { RevenueCatModule } from './revenuecat/revenuecat.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { RevenueCatModule } from './revenuecat/revenuecat.module';
     MatchmakingModule,
     NotificationsModule,
     RevenueCatModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

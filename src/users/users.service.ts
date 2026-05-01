@@ -1,6 +1,15 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, QueryFailedError, Repository } from 'typeorm';
+
+interface PgError extends QueryFailedError {
+  code: string;
+  detail: string;
+}
 import { User } from './entities/user.entity';
 import { UserResponseDto } from './dto/response-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -155,7 +164,9 @@ export class UsersService {
     return { ...this.mapToResponseDto(user), photoUrl };
   }
 
-  async getGalleryPhotos(userId: string): Promise<{ id: string; url: string }[]> {
+  async getGalleryPhotos(
+    userId: string,
+  ): Promise<{ id: string; url: string }[]> {
     const pics = await this.picRepo.find({
       where: { user: { id: userId }, isPrimary: false },
       order: { createdAt: 'ASC' },
@@ -319,7 +330,10 @@ export class UsersService {
     return { deleted: true };
   }
 
-  async updateProfile(userId: string, dto: PatchProfileDto): Promise<UserResponseDto> {
+  async updateProfile(
+    userId: string,
+    dto: PatchProfileDto,
+  ): Promise<UserResponseDto> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
 
@@ -328,13 +342,20 @@ export class UsersService {
       const saved = await this.userRepository.save(user);
       return this.mapToResponseDto(saved);
     } catch (err) {
-      if (err instanceof QueryFailedError && (err as any).code === '23505') {
-        const detail: string = (err as any).detail ?? '';
+      if (
+        err instanceof QueryFailedError &&
+        (err as PgError).code === '23505'
+      ) {
+        const detail: string = (err as PgError).detail ?? '';
         if (detail.includes('phoneNumber')) {
-          throw new BadRequestException('This phone number is already in use by another account.');
+          throw new BadRequestException(
+            'This phone number is already in use by another account.',
+          );
         }
         if (detail.includes('email')) {
-          throw new BadRequestException('This email is already in use by another account.');
+          throw new BadRequestException(
+            'This email is already in use by another account.',
+          );
         }
         throw new BadRequestException('A unique constraint was violated.');
       }

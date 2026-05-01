@@ -3,15 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 
-type RevenueCatEventType =
-  | 'INITIAL_PURCHASE'
-  | 'RENEWAL'
-  | 'PRODUCT_CHANGE'
-  | 'CANCELLATION'
-  | 'EXPIRATION'
-  | 'BILLING_ISSUE'
-  | 'SUBSCRIBER_ALIAS'
-  | string;
+type RevenueCatEventType = string;
 
 export interface RevenueCatEvent {
   type: RevenueCatEventType;

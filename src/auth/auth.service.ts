@@ -183,7 +183,7 @@ export class AuthService {
   }
 
   async appleLogin(dto: AppleLoginDto) {
-    let payload: any;
+    let payload: Record<string, unknown>;
 
     try {
       payload = await appleSignin.verifyIdToken(dto.identityToken, {
@@ -194,9 +194,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid Apple token');
     }
 
-    const appleUserId: string = payload.sub;
+    const appleUserId: string = payload.sub as string;
     // JWT email takes precedence; credential email is the fallback for first sign-in
-    const email: string | null = payload.email ?? dto.email ?? null;
+    const email: string | null =
+      (payload.email as string | undefined) ?? dto.email ?? null;
     const emailVerified: boolean =
       payload.email_verified === true || payload.email_verified === 'true';
 
@@ -226,7 +227,7 @@ export class AuthService {
   }
 
   async googleLogin(dto: GoogleLoginDto) {
-    let googleUser: any;
+    let googleUser: Record<string, unknown>;
 
     try {
       const res = await fetch(
@@ -245,14 +246,20 @@ export class AuthService {
       process.env.GOOGLE_WEB_CLIENT_ID,
     ].filter(Boolean);
 
-    if (validAudiences.length > 0 && !validAudiences.includes(googleUser.aud)) {
+    if (
+      validAudiences.length > 0 &&
+      !validAudiences.includes(googleUser.aud as string | undefined)
+    ) {
       throw new UnauthorizedException('Invalid Google token audience');
     }
 
-    const googleId: string = googleUser.sub;
-    const email: string | null = googleUser.email ?? null;
-    const firstName: string | null = googleUser.given_name ?? null;
-    const lastName: string | null = googleUser.family_name ?? null;
+    const googleId: string = googleUser.sub as string;
+    const email: string | null =
+      (googleUser.email as string | undefined) ?? null;
+    const firstName: string | null =
+      (googleUser.given_name as string | undefined) ?? null;
+    const lastName: string | null =
+      (googleUser.family_name as string | undefined) ?? null;
     // locale is e.g. "en", "de", "de-CH" — take just the base language tag
     const language: string | null = googleUser.locale
       ? (googleUser.locale as string).split('-')[0]
@@ -265,7 +272,9 @@ export class AuthService {
 
     if (!user && email) {
       // Link Google to an existing email-based account if found
-      const existing = await this.usersService.findByEmail(email).catch(() => null);
+      const existing = await this.usersService
+        .findByEmail(email)
+        .catch(() => null);
       if (existing) {
         existing.googleId = googleId;
         if (!existing.emailVerified && emailVerified) {
