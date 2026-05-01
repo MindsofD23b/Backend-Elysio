@@ -73,7 +73,30 @@ export class MatchmakingService {
       currentState === MatchmakingState.CONNECTING ||
       currentState === MatchmakingState.IN_ROOM
     ) {
-      // Stale state from a previous call — reset and re-enter queue
+      const existingMatch = await this.matchHistoryRepository.findOne({
+        where: [
+          { userA: { id: user.id }, outcome: 'matched' },
+          { userB: { id: user.id }, outcome: 'matched' },
+        ],
+        relations: { userA: true, userB: true },
+        order: { createdAt: 'DESC' },
+      });
+
+      if (existingMatch?.roomId) {
+        this.matchmakingGateway.notifyRoomReady(user.id, { roomId: existingMatch.roomId });
+        const matchedUserId =
+          existingMatch.userA.id === user.id
+            ? existingMatch.userB.id
+            : existingMatch.userA.id;
+        return {
+          type: 'matched',
+          ticket: this.activeTickets.get(user.id) ?? ({} as QueueTicket),
+          matchedUserId,
+          roomId: existingMatch.roomId,
+        };
+      }
+
+      // Truly stale (no DB record, e.g. server restarted) — only then reset
       this.activeTickets.delete(user.id);
       this.stateStore.set(user.id, MatchmakingState.IDLE);
     }
