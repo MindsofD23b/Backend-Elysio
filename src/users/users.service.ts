@@ -394,6 +394,32 @@ export class UsersService {
     return { id: pic.id, key };
   }
 
+  async getPublicProfile(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['profilePictures'],
+    });
+    if (!user) throw new NotFoundException('User not found');
+
+    const pic =
+      user.profilePictures?.find((p) => p.isPrimary) ??
+      user.profilePictures?.[0] ??
+      null;
+    const photoUrl = pic ? await this.r2.getSignedUrl(pic.r2Key) : null;
+
+    return {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      dateOfBirth: user.dateOfBirth ?? null,
+      city: user.city ?? null,
+      jobTitle: user.jobTitle,
+      aboutMe: user.aboutMe,
+      createdAt: user.createdAt,
+      photoUrl,
+    };
+  }
+
   async changeSubscription(
     userId: string,
     newPlan: 'free' | 'premium' | 'gold',

@@ -131,4 +131,22 @@ export class UsersController {
   ) {
     return this.usersService.deleteProfilePicture(userId, photoId);
   }
+
+  @Get(':userId/profile')
+  @UseGuards(AuthGuard('jwt'))
+  getPublicProfile(@Param('userId', ParseUUIDPipe) userId: string) {
+    return this.usersService.getPublicProfile(userId);
+  }
+
+  @Get(':userId/gallery')
+  @UseGuards(AuthGuard('jwt'))
+  getUserGallery(@Param('userId', ParseUUIDPipe) userId: string) {
+    return this.usersService.getGalleryPhotos(userId);
+  }
+
+  @Get(':userId/interests')
+  @UseGuards(AuthGuard('jwt'))
+  getUserInterests(@Param('userId', ParseUUIDPipe) userId: string) {
+    return this.usersService.getInterests(userId);
+  }
 }
