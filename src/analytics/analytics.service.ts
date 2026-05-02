@@ -34,41 +34,26 @@ export class AnalyticsService {
 
     const currentWeek = this.streakService.getIsoWeek(new Date());
 
-    const [currentWeekMatches, hourRows, dayRows, allMatches] =
-      await Promise.all([
-        this.matchHistoryRepository.count({
-          where: [
-            { userA: { id: userId }, outcome: 'matched' },
-            { userB: { id: userId }, outcome: 'matched' },
-          ],
-        }),
-        this.matchHistoryRepository
-          .createQueryBuilder('m')
-          .select(
-            '(EXTRACT(HOUR FROM m."createdAt")::int / 3) * 3',
-            'bucketStart',
-          )
-          .addSelect('COUNT(*)', 'count')
-          .where('(m."userAId" = :id OR m."userBId" = :id)', { id: userId })
-          .andWhere('m.outcome = :outcome', { outcome: 'matched' })
-          .groupBy('(EXTRACT(HOUR FROM m."createdAt")::int / 3) * 3')
-          .getRawMany<{ bucketStart: string; count: string }>(),
-        this.matchHistoryRepository
-          .createQueryBuilder('m')
-          .select('EXTRACT(DOW FROM m."createdAt")', 'dow')
-          .addSelect('COUNT(*)', 'count')
-          .where('(m."userAId" = :id OR m."userBId" = :id)', { id: userId })
-          .andWhere('m.outcome = :outcome', { outcome: 'matched' })
-          .groupBy('EXTRACT(DOW FROM m."createdAt")')
-          .orderBy('count', 'DESC')
-          .limit(1)
-          .getRawMany<{ dow: string; count: string }>(),
-        this.matchHistoryRepository.find({
-          where: [{ userA: { id: userId } }, { userB: { id: userId } }],
-          take: 15,
-          order: { createdAt: 'DESC' },
-        }),
-      ]);
+    const [currentWeekMatches, allMatches, matchedMatches] = await Promise.all([
+      this.matchHistoryRepository.count({
+        where: [
+          { userA: { id: userId }, outcome: 'matched' },
+          { userB: { id: userId }, outcome: 'matched' },
+        ],
+      }),
+      this.matchHistoryRepository.find({
+        where: [{ userA: { id: userId } }, { userB: { id: userId } }],
+        take: 15,
+        order: { createdAt: 'DESC' },
+      }),
+      this.matchHistoryRepository.find({
+        where: [
+          { userA: { id: userId }, outcome: 'matched' },
+          { userB: { id: userId }, outcome: 'matched' },
+        ],
+        select: { createdAt: true } as never,
+      }),
+    ]);
 
     const scoredMatches = allMatches.filter((m) => m.mutualInterests !== null);
     const avgMutualInterests =
@@ -81,7 +66,7 @@ export class AnalyticsService {
           )
         : null;
 
-    const days = [
+    const DAYS = [
       'Sunday',
       'Monday',
       'Tuesday',
@@ -90,21 +75,27 @@ export class AnalyticsService {
       'Friday',
       'Saturday',
     ];
-
-    // Fixed 7 buckets: 03-06, 06-09, ..., 21-24 (label = end hour)
     const BUCKET_STARTS = [3, 6, 9, 12, 15, 18, 21];
 
-    const countMap = new Map(
-      hourRows.map((r) => [Number(r.bucketStart), Number(r.count)]),
-    );
+    const bucketCounts = new Array<number>(7).fill(0);
+    const dayCounts = new Array<number>(7).fill(0);
 
-    const barValues = BUCKET_STARTS.map((s) => countMap.get(s) ?? 0);
-    const peakIndex = barValues.indexOf(Math.max(...barValues));
+    for (const match of matchedMatches) {
+      const date = new Date(match.createdAt);
+      const hour = date.getHours();
+      const bucketStart = Math.floor(hour / 3) * 3;
+      const bucketIndex = BUCKET_STARTS.indexOf(bucketStart);
+      if (bucketIndex !== -1) bucketCounts[bucketIndex]++;
+      dayCounts[date.getDay()]++;
+    }
+
+    const peakIndex = bucketCounts.indexOf(Math.max(...bucketCounts));
+    const peakDayIndex = dayCounts.indexOf(Math.max(...dayCounts));
 
     const bestTimeToBeOnline = {
-      barValues,
-      peakIndex: barValues[peakIndex] > 0 ? peakIndex : null,
-      bestDay: dayRows[0] ? days[Number(dayRows[0].dow)] : null,
+      barValues: bucketCounts,
+      peakIndex: bucketCounts[peakIndex] > 0 ? peakIndex : null,
+      bestDay: matchedMatches.length > 0 ? DAYS[peakDayIndex] : null,
     };
 
     const weekCompleted = user.lastStreakWeek === currentWeek;
