@@ -12,6 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
 import { MediaService } from './media.service';
 import { ChatService } from '../chats/chats.service';
+import { MatchmakingService } from '../matchmaking/matchmaking.service';
 
 type JwtPayload = { sub: string };
 
@@ -26,6 +27,7 @@ export class VideoGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly mediaService: MediaService,
     private readonly jwtService: JwtService,
     private readonly chatService: ChatService,
+    private readonly matchmakingService: MatchmakingService,
   ) {}
 
   @WebSocketServer()
@@ -146,6 +148,7 @@ export class VideoGateway implements OnGatewayConnection, OnGatewayDisconnect {
         otherUserId: originalLikerUserId,
       });
 
+      await this.matchmakingService.setRoomOutcome(roomId, 'matched');
       this.server.to(roomId).emit('mutual_like', { chatRoomId: chatRoom.id });
       this.roomLikedBy.delete(roomId);
       this.logger.log(

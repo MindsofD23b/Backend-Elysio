@@ -133,12 +133,25 @@ export class MatchmakingService {
     return this.createMatch(ticket, match);
   }
 
+  async setRoomOutcome(
+    roomId: string,
+    outcome: 'matched' | 'declined',
+  ): Promise<void> {
+    await this.matchHistoryRepository.update({ roomId }, { outcome });
+  }
+
+  leaveRoom(userId: string): { success: true } {
+    this.stateStore.set(userId, MatchmakingState.IDLE);
+    this.activeTickets.delete(userId);
+    return { success: true };
+  }
+
   async declineMatch(
     userId: string,
     roomId: string,
   ): Promise<{ success: true }> {
     await this.matchHistoryRepository.update(
-      { roomId },
+      { roomId, outcome: 'default' },
       { outcome: 'declined' },
     );
     this.stateStore.set(userId, MatchmakingState.IDLE);
@@ -317,7 +330,7 @@ export class MatchmakingService {
         userA,
         userB,
         roomId,
-        outcome: 'matched',
+        outcome: 'default',
         mutualInterests,
       }),
     );

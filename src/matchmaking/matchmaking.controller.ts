@@ -34,6 +34,11 @@ export class MatchmakingController {
     return this.matchmakingService.declineMatch(req.user.sub, body.roomId);
   }
 
+  @Post('leave')
+  leaveRoom(@Req() req: AuthenticatedRequest) {
+    return this.matchmakingService.leaveRoom(req.user.sub);
+  }
+
   @Get('me')
   getMyQueueStatus(@Req() req: AuthenticatedRequest) {
     return this.matchmakingService.getMyQueueStatus(req.user.sub);
