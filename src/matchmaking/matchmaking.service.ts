@@ -16,6 +16,7 @@ import { QueueTicket } from './interfaces/queue-ticket.interface';
 import { ActivateCallResponse } from './interfaces/activate-call-response.interface';
 
 import { MatchmakingGateway } from './matchmaking.gateway';
+import { StreakService } from './streak.service';
 
 @Injectable()
 export class MatchmakingService {
@@ -30,6 +31,7 @@ export class MatchmakingService {
     @InjectRepository(MatchHistory)
     private readonly matchHistoryRepository: Repository<MatchHistory>,
     private readonly matchmakingGateway: MatchmakingGateway,
+    private readonly streakService: StreakService,
   ) {}
 
   async activateCall(userId: string): Promise<ActivateCallResponse> {
@@ -323,6 +325,8 @@ export class MatchmakingService {
     await Promise.all([
       this.updateAvgWaitTime(ticket.userId, waitTimeA),
       this.updateAvgWaitTime(match.userId, waitTimeB),
+      this.streakService.updateStreak(ticket.userId),
+      this.streakService.updateStreak(match.userId),
     ]);
 
     this.matchmakingGateway.notifyMatchFound(ticket.userId, {

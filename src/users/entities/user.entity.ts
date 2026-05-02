@@ -81,6 +81,18 @@ export class User {
   @Column({ default: false })
   isBlockedFromMatching: boolean;
 
+  @Column({ type: 'int', default: 0 })
+  currentStreak: number;
+
+  @Column({ type: 'int', default: 0 })
+  longestStreak: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  lastStreakWeek: string | null;
+
+  @Column({ type: 'int', default: 0 })
+  consecutiveFreezes: number;
+
   @Column({ type: 'float', nullable: true })
   avgWaitTime: number | null;
 
