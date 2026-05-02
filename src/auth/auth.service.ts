@@ -178,6 +178,31 @@ export class AuthService {
     };
   }
 
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ) {
+    const user = await this.usersService.findById(userId);
+
+    if (!user.password) {
+      throw new BadRequestException(
+        'Password change is not available for social login accounts',
+      );
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isMatch) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    user.password = await bcrypt.hash(newPassword, 12);
+    await this.usersService.save(user);
+
+    return { success: true };
+  }
+
   async validateJwtUser(userId: string) {
     return this.usersService.findById(userId);
   }
