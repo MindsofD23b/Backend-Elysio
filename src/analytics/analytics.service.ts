@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MatchHistory } from '../matchmaking/entities/match-history.entity';
 import { User } from '../users/entities/user.entity';
-import { StreakService } from '../matchmaking/streak.service';
+import { StreakService } from '../streak/streak.service';
 
 const MAX_FREEZES = 2;
 

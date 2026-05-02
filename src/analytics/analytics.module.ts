@@ -5,13 +5,13 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MatchHistory } from '../matchmaking/entities/match-history.entity';
 import { User } from '../users/entities/user.entity';
-import { MatchmakingModule } from '../matchmaking/matchmaking.module';
+import { StreakModule } from '../streak/streak.module';
 
 @Module({
   imports: [
     ConfigModule,
     TypeOrmModule.forFeature([MatchHistory, User]),
-    MatchmakingModule,
+    StreakModule,
   ],
   controllers: [AnalyticsController],
   providers: [AnalyticsService],

@@ -17,12 +17,13 @@ export class StreakService {
   ): Promise<{ updated: boolean; currentStreak: number }> {
     const user = await this.usersRepository.findOne({
       where: { id: userId },
-      select: { id: true, currentStreak: true, lastStreakWeek: true } as never,
+      select: { id: true, currentStreak: true, lastMatchDate: true } as never,
     });
 
     if (!user) return { updated: false, currentStreak: 0 };
 
-    const updated = user.lastStreakWeek === this.getIsoWeek(new Date());
+    const today = this.getDateString(new Date());
+    const updated = user.lastMatchDate === today;
     return { updated, currentStreak: user.currentStreak };
   }
 
@@ -35,43 +36,43 @@ export class StreakService {
         longestStreak: true,
         lastStreakWeek: true,
         consecutiveFreezes: true,
+        lastFreezeReset: true,
       } as never,
     });
 
     if (!user) return;
 
-    const currentWeek = this.getIsoWeek(new Date());
+    const now = new Date();
+    const currentMonth = this.getMonthString(now);
+    const currentWeek = this.getIsoWeek(now);
     const lastWeek = user.lastStreakWeek;
 
     if (lastWeek === currentWeek) {
-      // Already matched this week — no change needed
       return;
     }
 
-    let { currentStreak, consecutiveFreezes } = user;
+    let { currentStreak } = user;
+    let consecutiveFreezes =
+      user.lastFreezeReset !== currentMonth ? 0 : user.consecutiveFreezes;
+    const freezeWasReset = user.lastFreezeReset !== currentMonth;
 
     if (!lastWeek) {
-      // First ever match
       currentStreak = 1;
       consecutiveFreezes = 0;
     } else {
       const weeksDiff = this.weeksDifference(lastWeek, currentWeek);
 
       if (weeksDiff === 1) {
-        // Perfect consecutive week
         currentStreak += 1;
         consecutiveFreezes = 0;
       } else {
-        // Missed weeks — each missed week consumes one freeze
         const missedWeeks = weeksDiff - 1;
         const freezesNeeded = missedWeeks;
 
         if (consecutiveFreezes + freezesNeeded <= MAX_FREEZES) {
-          // Freezes cover the gap — streak survives
           currentStreak += 1;
           consecutiveFreezes += freezesNeeded;
         } else {
-          // Too many missed weeks — streak resets
           currentStreak = 1;
           consecutiveFreezes = 0;
         }
@@ -85,6 +86,8 @@ export class StreakService {
       longestStreak,
       lastStreakWeek: currentWeek,
       consecutiveFreezes,
+      lastMatchDate: this.getDateString(now),
+      ...(freezeWasReset && { lastFreezeReset: currentMonth }),
     });
   }
 
@@ -102,6 +105,14 @@ export class StreakService {
           7,
       );
     return `${d.getFullYear()}-W${String(weekNumber).padStart(2, '0')}`;
+  }
+
+  getDateString(date: Date): string {
+    return date.toISOString().slice(0, 10);
+  }
+
+  getMonthString(date: Date): string {
+    return date.toISOString().slice(0, 7); // "YYYY-MM"
   }
 
   private weeksDifference(weekA: string, weekB: string): number {

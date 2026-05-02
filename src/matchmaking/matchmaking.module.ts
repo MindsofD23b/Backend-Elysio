@@ -5,7 +5,7 @@ import { AuthModule } from '../auth/auth.module';
 import { MatchmakingController } from './matchmaking.controller';
 import { MatchmakingService } from './matchmaking.service';
 import { MatchmakingGateway } from './matchmaking.gateway';
-import { StreakService } from './streak.service';
+import { StreakModule } from '../streak/streak.module';
 
 import { User } from '../users/entities/user.entity';
 import { UserBlock } from '../interests/entities/user-block.entity';
@@ -15,9 +15,10 @@ import { MatchHistory } from './entities/match-history.entity';
   imports: [
     TypeOrmModule.forFeature([User, UserBlock, MatchHistory]),
     AuthModule,
+    StreakModule,
   ],
   controllers: [MatchmakingController],
-  providers: [MatchmakingService, MatchmakingGateway, StreakService],
-  exports: [MatchmakingService, MatchmakingGateway, StreakService],
+  providers: [MatchmakingService, MatchmakingGateway],
+  exports: [MatchmakingService, MatchmakingGateway],
 })
 export class MatchmakingModule {}

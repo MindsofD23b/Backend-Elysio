@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 
 import { MatchmakingService } from './matchmaking.service';
+import { StreakService } from '../streak/streak.service';
 
 type AuthenticatedRequest = Request & {
   user: {
@@ -14,7 +15,10 @@ type AuthenticatedRequest = Request & {
 @Controller('matchmaking')
 @UseGuards(AuthGuard('jwt'))
 export class MatchmakingController {
-  constructor(private readonly matchmakingService: MatchmakingService) {}
+  constructor(
+    private readonly matchmakingService: MatchmakingService,
+    private readonly streakService: StreakService,
+  ) {}
 
   @Post('activate')
   async activateCall(@Req() req: AuthenticatedRequest) {
@@ -37,6 +41,11 @@ export class MatchmakingController {
   @Post('leave')
   leaveRoom(@Req() req: AuthenticatedRequest) {
     return this.matchmakingService.leaveRoom(req.user.sub);
+  }
+
+  @Get('streak')
+  checkStreak(@Req() req: AuthenticatedRequest) {
+    return this.streakService.checkStreak(req.user.sub);
   }
 
   @Get('me')

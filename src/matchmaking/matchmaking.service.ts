@@ -16,7 +16,7 @@ import { QueueTicket } from './interfaces/queue-ticket.interface';
 import { ActivateCallResponse } from './interfaces/activate-call-response.interface';
 
 import { MatchmakingGateway } from './matchmaking.gateway';
-import { StreakService } from './streak.service';
+import { StreakService } from '../streak/streak.service';
 
 const PREVIOUS_CALL_WAIT_THRESHOLD_MS = 30_000; // 30 seconds
 

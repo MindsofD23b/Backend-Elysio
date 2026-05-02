@@ -90,8 +90,14 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   lastStreakWeek: string | null;
 
+  @Column({ type: 'varchar', nullable: true })
+  lastMatchDate: string | null;
+
   @Column({ type: 'int', default: 0 })
   consecutiveFreezes: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  lastFreezeReset: string | null;
 
   @Column({ type: 'float', nullable: true })
   avgWaitTime: number | null;
