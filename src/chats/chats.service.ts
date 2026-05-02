@@ -154,7 +154,10 @@ export class ChatService {
     await Promise.all(
       uniqueOtherIDs.map(async (id) => {
         const pic = picByUser.get(id);
-        avatarByUser.set(id, pic ? await this.r2.getSignedUrl(pic.r2Key) : null);
+        avatarByUser.set(
+          id,
+          pic ? await this.r2.getSignedUrl(pic.r2Key) : null,
+        );
       }),
     );
 

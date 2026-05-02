@@ -102,7 +102,9 @@ export class VideoGateway implements OnGatewayConnection, OnGatewayDisconnect {
       .to(roomId)
       .except(client.id)
       .emit('receive_reaction', { emoji: data.emoji, fromPeerId: peerId });
-    this.logger.log(`peer ${peerId} reacted with ${data.emoji} in room ${roomId}`);
+    this.logger.log(
+      `peer ${peerId} reacted with ${data.emoji} in room ${roomId}`,
+    );
   }
 
   @SubscribeMessage('send_like')

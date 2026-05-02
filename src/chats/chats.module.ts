@@ -15,7 +15,13 @@ import { R2Module } from '../r2/r2.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ChatRoom, ChatMessage, ChatMessageKey, User, ProfilePicture]),
+    TypeOrmModule.forFeature([
+      ChatRoom,
+      ChatMessage,
+      ChatMessageKey,
+      User,
+      ProfilePicture,
+    ]),
     AuthModule,
     NotificationsModule,
     R2Module,
