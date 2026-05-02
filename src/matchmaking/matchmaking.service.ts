@@ -77,6 +77,8 @@ export class MatchmakingService {
     ) {
       const existingMatch = await this.matchHistoryRepository.findOne({
         where: [
+          { userA: { id: user.id }, outcome: 'default' },
+          { userB: { id: user.id }, outcome: 'default' },
           { userA: { id: user.id }, outcome: 'matched' },
           { userB: { id: user.id }, outcome: 'matched' },
         ],
@@ -513,6 +515,8 @@ export class MatchmakingService {
 
     const matchCount = await this.matchHistoryRepository.count({
       where: [
+        { userA: { id: userId }, outcome: 'default' },
+        { userB: { id: userId }, outcome: 'default' },
         { userA: { id: userId }, outcome: 'matched' },
         { userB: { id: userId }, outcome: 'matched' },
       ],
