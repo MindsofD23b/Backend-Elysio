@@ -315,7 +315,7 @@ export class ChatService {
           senderName,
           'has sent you a message',
           {
-            url: `/(protected)/chats/${roomId}`,
+            url: `/(protected)/chat`,
             avatarUrl,
             priority: 'high',
           },
