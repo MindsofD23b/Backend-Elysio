@@ -316,7 +316,7 @@ export class ChatService {
           'has sent you a message',
           {
             chatRoomId: roomId,
-            screen: 'Chat',
+            url: `/chat/${roomId}`,
             avatarUrl,
             priority: 'high',
           },
