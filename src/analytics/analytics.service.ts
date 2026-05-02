@@ -88,7 +88,7 @@ export class AnalyticsService {
     const bucketCounts = new Array<number>(8).fill(0);
 
     for (const match of matchedMatches) {
-      const hour = new Date(match.createdAt).getHours();
+      const hour = new Date(match.createdAt).getUTCHours();
       const bucketStart = Math.floor(hour / 3) * 3;
       const bucketIndex = BUCKET_STARTS.indexOf(bucketStart);
       if (bucketIndex !== -1) bucketCounts[bucketIndex]++;
