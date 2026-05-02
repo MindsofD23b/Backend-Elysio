@@ -4,9 +4,10 @@ import { AnalyticsService } from './analytics.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MatchHistory } from '../matchmaking/entities/match-history.entity';
+import { User } from '../users/entities/user.entity';
 
 @Module({
-  imports: [ConfigModule, TypeOrmModule.forFeature([MatchHistory])],
+  imports: [ConfigModule, TypeOrmModule.forFeature([MatchHistory, User])],
   controllers: [AnalyticsController],
   providers: [AnalyticsService],
   exports: [AnalyticsService],

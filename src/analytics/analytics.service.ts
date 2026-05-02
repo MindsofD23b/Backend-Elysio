@@ -2,32 +2,33 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MatchHistory } from '../matchmaking/entities/match-history.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class AnalyticsService {
   constructor(
     @InjectRepository(MatchHistory)
     private readonly matchHistoryRepository: Repository<MatchHistory>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async getUsersAnalytics(userId: string) {
-    // let MatchTime = 0;
-    // let count = 0;
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      select: { id: true, avgWaitTime: true } as never,
+    });
+
+    if (!user) throw new NotFoundException('User not found');
 
     const matches = await this.matchHistoryRepository.find({
       where: [{ userA: { id: userId } }, { userB: { id: userId } }],
       take: 15,
     });
 
-    if (!matches) throw new NotFoundException('No match found');
-
-    // matches.forEach((match: MatchHistory) => {
-    //   count++;
-    //   MatchTime += Number(match.matchTime);
-    // });
-
-    // const avgTime = Math.round((MatchTime / count / 1000) * 100) / 100;
-
-    return matches;
+    return {
+      avgWaitTime: user.avgWaitTime ?? null,
+      matches,
+    };
   }
 }
