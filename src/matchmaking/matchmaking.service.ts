@@ -303,9 +303,12 @@ export class MatchmakingService {
     const waitTimeA = now - new Date(ticket.createdAt).getTime();
     const waitTimeB = now - new Date(match.createdAt).getTime();
 
-    const mutualInterests = ticket.interests.filter((i) =>
+    const sharedCount = ticket.interests.filter((i) =>
       match.interests.includes(i),
-    );
+    ).length;
+    const totalUnique = new Set([...ticket.interests, ...match.interests]).size;
+    const mutualInterests =
+      totalUnique > 0 ? Math.round((sharedCount / totalUnique) * 100) : 0;
 
     await this.matchHistoryRepository.save(
       this.matchHistoryRepository.create({

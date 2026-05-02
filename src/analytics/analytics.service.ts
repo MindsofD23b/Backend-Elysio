@@ -26,8 +26,20 @@ export class AnalyticsService {
       take: 15,
     });
 
+    const scoredMatches = matches.filter((m) => m.mutualInterests !== null);
+    const avgMutualInterests =
+      scoredMatches.length > 0
+        ? Math.round(
+            scoredMatches.reduce(
+              (sum, m) => sum + (m.mutualInterests ?? 0),
+              0,
+            ) / scoredMatches.length,
+          )
+        : null;
+
     return {
       avgWaitTime: user.avgWaitTime ?? null,
+      avgMutualInterests,
       matches,
     };
   }

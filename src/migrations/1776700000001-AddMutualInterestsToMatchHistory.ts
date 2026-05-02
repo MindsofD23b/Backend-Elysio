@@ -5,7 +5,7 @@ export class AddMutualInterestsToMatchHistory1776700000001 implements MigrationI
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "match_history" ADD "mutualInterests" json NULL`,
+      `ALTER TABLE "match_history" ADD "mutualInterests" integer NULL`,
     );
   }
 
