@@ -27,6 +27,6 @@ export class MatchHistory {
   @Column({ type: 'int', nullable: true })
   mutualInterests: number | null;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 }
