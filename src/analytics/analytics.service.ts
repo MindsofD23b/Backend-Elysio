@@ -27,7 +27,6 @@ export class AnalyticsService {
         longestStreak: true,
         lastStreakWeek: true,
         consecutiveFreezes: true,
-        country: true,
       } as never,
     });
 
@@ -45,8 +44,6 @@ export class AnalyticsService {
         }),
         this.matchHistoryRepository
           .createQueryBuilder('m')
-          .innerJoin('m.userA', 'ua')
-          .innerJoin('m.userB', 'ub')
           .select(
             '(EXTRACT(HOUR FROM m."createdAt")::int / 3) * 3',
             'bucketStart',
@@ -54,22 +51,14 @@ export class AnalyticsService {
           .addSelect('COUNT(*)', 'count')
           .where('(m."userAId" = :id OR m."userBId" = :id)', { id: userId })
           .andWhere('m.outcome = :outcome', { outcome: 'matched' })
-          .andWhere('ua.country = :country AND ub.country = :country', {
-            country: user.country,
-          })
           .groupBy('"bucketStart"')
           .getRawMany<{ bucketStart: string; count: string }>(),
         this.matchHistoryRepository
           .createQueryBuilder('m')
-          .innerJoin('m.userA', 'ua')
-          .innerJoin('m.userB', 'ub')
           .select('EXTRACT(DOW FROM m."createdAt")', 'dow')
           .addSelect('COUNT(*)', 'count')
           .where('(m."userAId" = :id OR m."userBId" = :id)', { id: userId })
           .andWhere('m.outcome = :outcome', { outcome: 'matched' })
-          .andWhere('ua.country = :country AND ub.country = :country', {
-            country: user.country,
-          })
           .groupBy('dow')
           .orderBy('count', 'DESC')
           .limit(1)
@@ -86,7 +75,7 @@ export class AnalyticsService {
       scoredMatches.length > 0
         ? Math.round(
             scoredMatches.reduce(
-              (sum: number, m) => sum + (m.mutualInterests ?? 0),
+              (sum: number, m) => sum + (m.mutualInterests as number),
               0,
             ) / scoredMatches.length,
           )
