@@ -18,6 +18,8 @@ import { ActivateCallResponse } from './interfaces/activate-call-response.interf
 import { MatchmakingGateway } from './matchmaking.gateway';
 import { StreakService } from './streak.service';
 
+const PREVIOUS_CALL_WAIT_THRESHOLD_MS = 30_000; // 30 seconds
+
 @Injectable()
 export class MatchmakingService {
   private readonly stateStore = new Map<string, MatchmakingState>();
@@ -233,60 +235,73 @@ export class MatchmakingService {
   private async findMatchForUser(
     currentTicket: QueueTicket,
   ): Promise<QueueTicket | null> {
-    const candidates = Array.from(this.activeTickets.values());
+    const waitMs = Date.now() - new Date(currentTicket.createdAt).getTime();
+    const allowPreviousCalls = waitMs >= PREVIOUS_CALL_WAIT_THRESHOLD_MS;
 
+    const candidates = Array.from(this.activeTickets.values()).filter(
+      (c) =>
+        c.userId !== currentTicket.userId &&
+        this.getCurrentState(c.userId) === MatchmakingState.WAITING &&
+        this.isGenderCompatible(currentTicket, c),
+    );
+
+    // First pass: fresh candidates only (no prior calls together)
+    const fresh = await this.filterCandidates(currentTicket, candidates, false);
+    if (fresh) return fresh;
+
+    // Second pass: after threshold, allow previously-called users with shared interests
+    if (allowPreviousCalls) {
+      return this.filterCandidates(currentTicket, candidates, true);
+    }
+
+    return null;
+  }
+
+  private async filterCandidates(
+    currentTicket: QueueTicket,
+    candidates: QueueTicket[],
+    allowPreviousCalls: boolean,
+  ): Promise<QueueTicket | null> {
     for (const candidate of candidates) {
-      if (candidate.userId === currentTicket.userId) {
-        continue;
-      }
-
-      if (this.getCurrentState(candidate.userId) !== MatchmakingState.WAITING) {
-        continue;
-      }
-
-      if (!this.isGenderCompatible(currentTicket, candidate)) {
-        continue;
-      }
-
-      // Claim both slots synchronously before any await to prevent race conditions.
-      // If either user was already claimed by a concurrent call, their state will
-      // no longer be WAITING and the check above will have skipped them.
       this.stateStore.set(currentTicket.userId, MatchmakingState.CONNECTING);
       this.stateStore.set(candidate.userId, MatchmakingState.CONNECTING);
 
-      const ageCompatible = await this.isAgeCompatible(
-        currentTicket.userId,
-        candidate.userId,
-        currentTicket.age,
-        candidate.age,
-      );
+      const [ageCompatible, blocked, declined, previousCall] =
+        await Promise.all([
+          this.isAgeCompatible(
+            currentTicket.userId,
+            candidate.userId,
+            currentTicket.age,
+            candidate.age,
+          ),
+          this.isBlocked(currentTicket.userId, candidate.userId),
+          this.hasDeclinedMatch(currentTicket.userId, candidate.userId),
+          this.hasPreviousCall(currentTicket.userId, candidate.userId),
+        ]);
 
-      if (!ageCompatible) {
+      const rollback = () => {
         this.stateStore.set(currentTicket.userId, MatchmakingState.WAITING);
         this.stateStore.set(candidate.userId, MatchmakingState.WAITING);
+      };
+
+      if (!ageCompatible || blocked || declined) {
+        rollback();
         continue;
       }
 
-      const blocked = await this.isBlocked(
-        currentTicket.userId,
-        candidate.userId,
-      );
-
-      if (blocked) {
-        this.stateStore.set(currentTicket.userId, MatchmakingState.WAITING);
-        this.stateStore.set(candidate.userId, MatchmakingState.WAITING);
-        continue;
-      }
-
-      const declined = await this.hasDeclinedMatch(
-        currentTicket.userId,
-        candidate.userId,
-      );
-
-      if (declined) {
-        this.stateStore.set(currentTicket.userId, MatchmakingState.WAITING);
-        this.stateStore.set(candidate.userId, MatchmakingState.WAITING);
-        continue;
+      if (previousCall) {
+        if (!allowPreviousCalls) {
+          rollback();
+          continue;
+        }
+        // Only allow if they share at least one interest
+        const hasSharedInterest = currentTicket.interests.some((i) =>
+          candidate.interests.includes(i),
+        );
+        if (!hasSharedInterest) {
+          rollback();
+          continue;
+        }
       }
 
       return candidate;
@@ -466,6 +481,21 @@ export class MatchmakingService {
     }
 
     return true;
+  }
+
+  private async hasPreviousCall(
+    userIdA: string,
+    userIdB: string,
+  ): Promise<boolean> {
+    const previous = await this.matchHistoryRepository.findOne({
+      where: [
+        { userA: { id: userIdA }, userB: { id: userIdB }, outcome: 'default' },
+        { userA: { id: userIdB }, userB: { id: userIdA }, outcome: 'default' },
+        { userA: { id: userIdA }, userB: { id: userIdB }, outcome: 'matched' },
+        { userA: { id: userIdB }, userB: { id: userIdA }, outcome: 'matched' },
+      ],
+    });
+    return Boolean(previous);
   }
 
   private async hasDeclinedMatch(

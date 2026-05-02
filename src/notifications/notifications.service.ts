@@ -50,6 +50,8 @@ export class NotificationsService {
       title,
       body,
       sound: 'default',
+      priority: 'high',
+      channelId: 'messages',
       data,
     };
 

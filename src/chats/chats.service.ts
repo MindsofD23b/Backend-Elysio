@@ -290,17 +290,36 @@ export class ChatService {
       if (room) {
         const recipientId =
           room.userAId === currentUserId ? room.userBId : room.userAId;
-        const sender = await this.userRepo.findOne({
-          where: { id: currentUserId },
-          select: ['firstName', 'lastName'],
-        });
+
+        const [sender, senderPic] = await Promise.all([
+          this.userRepo.findOne({
+            where: { id: currentUserId },
+            select: ['id', 'firstName', 'lastName'],
+          }),
+          this.picRepo.findOne({
+            where: { user: { id: currentUserId }, isPrimary: true },
+            relations: ['user'],
+          }),
+        ]);
+
         const senderName = sender
           ? `${sender.firstName} ${sender.lastName}`
           : 'Someone';
+
+        const avatarUrl = senderPic
+          ? await this.r2.getSignedUrl(senderPic.r2Key)
+          : null;
+
         await this.notificationsService.sendPushNotification(
           recipientId,
-          `${senderName} has sent you a message`,
-          '',
+          senderName,
+          'has sent you a message',
+          {
+            chatRoomId: roomId,
+            screen: 'Chat',
+            avatarUrl,
+            priority: 'high',
+          },
         );
       }
 
