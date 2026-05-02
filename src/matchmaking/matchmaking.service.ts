@@ -303,12 +303,17 @@ export class MatchmakingService {
     const waitTimeA = now - new Date(ticket.createdAt).getTime();
     const waitTimeB = now - new Date(match.createdAt).getTime();
 
+    const mutualInterests = ticket.interests.filter((i) =>
+      match.interests.includes(i),
+    );
+
     await this.matchHistoryRepository.save(
       this.matchHistoryRepository.create({
         userA,
         userB,
         roomId,
         outcome: 'matched',
+        mutualInterests,
       }),
     );
 

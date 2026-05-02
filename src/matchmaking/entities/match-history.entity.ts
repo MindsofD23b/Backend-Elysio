@@ -24,6 +24,9 @@ export class MatchHistory {
   @Column({ type: 'varchar', default: 'matched' })
   outcome: string;
 
+  @Column({ type: 'json', nullable: true })
+  mutualInterests: string[] | null;
+
   @CreateDateColumn()
   createdAt: Date;
 }
