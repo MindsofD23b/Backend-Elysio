@@ -51,7 +51,7 @@ export class AnalyticsService {
           .addSelect('COUNT(*)', 'count')
           .where('(m."userAId" = :id OR m."userBId" = :id)', { id: userId })
           .andWhere('m.outcome = :outcome', { outcome: 'matched' })
-          .groupBy('"bucketStart"')
+          .groupBy('(EXTRACT(HOUR FROM m."createdAt")::int / 3) * 3')
           .getRawMany<{ bucketStart: string; count: string }>(),
         this.matchHistoryRepository
           .createQueryBuilder('m')
@@ -59,7 +59,7 @@ export class AnalyticsService {
           .addSelect('COUNT(*)', 'count')
           .where('(m."userAId" = :id OR m."userBId" = :id)', { id: userId })
           .andWhere('m.outcome = :outcome', { outcome: 'matched' })
-          .groupBy('dow')
+          .groupBy('EXTRACT(DOW FROM m."createdAt")')
           .orderBy('count', 'DESC')
           .limit(1)
           .getRawMany<{ dow: string; count: string }>(),
