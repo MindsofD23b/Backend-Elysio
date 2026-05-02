@@ -70,36 +70,32 @@ export class AnalyticsService {
           )
         : null;
 
-    const DAYS = [
-      'Sunday',
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-    ];
-    const BUCKET_STARTS = [3, 6, 9, 12, 15, 18, 21];
+    const BUCKET_STARTS = [0, 3, 6, 9, 12, 15, 18, 21];
 
-    const bucketCounts = new Array<number>(7).fill(0);
-    const dayCounts = new Array<number>(7).fill(0);
+    const bucketCounts = new Array<number>(8).fill(0);
 
     for (const match of matchedMatches) {
-      const date = new Date(match.createdAt);
-      const hour = date.getHours();
+      const hour = new Date(match.createdAt).getHours();
       const bucketStart = Math.floor(hour / 3) * 3;
       const bucketIndex = BUCKET_STARTS.indexOf(bucketStart);
       if (bucketIndex !== -1) bucketCounts[bucketIndex]++;
-      dayCounts[date.getDay()]++;
     }
 
-    const peakIndex = bucketCounts.indexOf(Math.max(...bucketCounts));
-    const peakDayIndex = dayCounts.indexOf(Math.max(...dayCounts));
+    const totalWeeks =
+      matchedMatches.length > 0
+        ? Math.max(1, Math.ceil(matchedMatches.length / 7))
+        : 1;
+
+    const barValues = bucketCounts.map(
+      (count) => Math.round((count / totalWeeks) * 10) / 10,
+    );
+
+    const peak = Math.max(...barValues);
+    const peakIndex = peak > 0 ? barValues.indexOf(peak) : null;
 
     const bestTimeToBeOnline = {
-      barValues: bucketCounts,
-      peakIndex: bucketCounts[peakIndex] > 0 ? peakIndex : null,
-      bestDay: matchedMatches.length > 0 ? DAYS[peakDayIndex] : null,
+      barValues,
+      peakIndex,
     };
 
     const weekCompleted = user.lastStreakWeek === currentWeek;
