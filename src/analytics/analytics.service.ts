@@ -34,30 +34,43 @@ export class AnalyticsService {
 
     const currentWeek = this.streakService.getIsoWeek(new Date());
 
-    const [currentWeekMatches, allMatches, matchedMatches] = await Promise.all([
-      this.matchHistoryRepository.count({
-        where: [
-          { userA: { id: userId }, outcome: 'default' },
-          { userB: { id: userId }, outcome: 'default' },
-          { userA: { id: userId }, outcome: 'matched' },
-          { userB: { id: userId }, outcome: 'matched' },
-        ],
-      }),
-      this.matchHistoryRepository.find({
-        where: [{ userA: { id: userId } }, { userB: { id: userId } }],
-        take: 15,
-        order: { createdAt: 'DESC' },
-      }),
-      this.matchHistoryRepository.find({
-        where: [
-          { userA: { id: userId }, outcome: 'default' },
-          { userB: { id: userId }, outcome: 'default' },
-          { userA: { id: userId }, outcome: 'matched' },
-          { userB: { id: userId }, outcome: 'matched' },
-        ],
-        select: { createdAt: true } as never,
-      }),
-    ]);
+    const [currentWeekMatches, allMatches, matchedMatches, topInterests] =
+      await Promise.all([
+        this.matchHistoryRepository.count({
+          where: [
+            { userA: { id: userId }, outcome: 'default' },
+            { userB: { id: userId }, outcome: 'default' },
+            { userA: { id: userId }, outcome: 'matched' },
+            { userB: { id: userId }, outcome: 'matched' },
+          ],
+        }),
+        this.matchHistoryRepository.find({
+          where: [{ userA: { id: userId } }, { userB: { id: userId } }],
+          take: 15,
+          order: { createdAt: 'DESC' },
+        }),
+        this.matchHistoryRepository.find({
+          where: [
+            { userA: { id: userId }, outcome: 'default' },
+            { userB: { id: userId }, outcome: 'default' },
+            { userA: { id: userId }, outcome: 'matched' },
+            { userB: { id: userId }, outcome: 'matched' },
+          ],
+          select: { createdAt: true } as never,
+        }),
+        this.matchHistoryRepository.find({
+          where: [
+            { userA: { id: userId }, outcome: 'default' },
+            { userB: { id: userId }, outcome: 'default' },
+            { userA: { id: userId }, outcome: 'matched' },
+            { userB: { id: userId }, outcome: 'matched' },
+          ],
+          relations: {
+            userA: { userInterests: { interest: true } },
+            userB: { userInterests: { interest: true } },
+          },
+        }),
+      ]);
 
     const scoredMatches = allMatches.filter((m) => m.mutualInterests !== null);
     const avgMutualInterests =
@@ -104,9 +117,24 @@ export class AnalyticsService {
       user.consecutiveFreezes > 0 &&
       user.lastStreakWeek !== null;
 
+    const interestCountMap = new Map<string, number>();
+    for (const match of topInterests) {
+      const opponent = match.userA.id === userId ? match.userB : match.userA;
+      for (const ui of opponent.userInterests ?? []) {
+        const name = ui.interest?.name;
+        if (name)
+          interestCountMap.set(name, (interestCountMap.get(name) ?? 0) + 1);
+      }
+    }
+    const topMatchInterests = [...interestCountMap.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([interest, count]) => ({ interest, count }));
+
     return {
       avgWaitTime: user.avgWaitTime ?? null,
       avgMutualInterests,
+      topMatchInterests,
       bestTimeToBeOnline,
       streak: {
         current: user.currentStreak,
